@@ -1,4 +1,4 @@
-from analysis.genetic_algorithm import do_sweep
+from analysis.mass_action_reverse_calculation import calculate
 from constants.namespace import *
 
-do_sweep(S_OPEN_2, MASS_ACTION, 100, 0.01)
+calculate(S_OPEN_2, MASS_ACTION)
