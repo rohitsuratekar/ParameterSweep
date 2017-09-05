@@ -1,10 +1,12 @@
+import json
+
 import numpy as np
 from scipy.integrate import odeint
+
+from biology.component import *
 from biology.systems.open_cycle_2 import get_equations as open2
 from constants.namespace import *
 from utils.log import OUTPUT
-import json
-from biology.component import *
 
 
 def get_equations(system: str):
@@ -83,7 +85,8 @@ class Error:
     """
     total_files_saved = 0
 
-    def __init__(self, initial_total: float, all_concentrations: list, enzymes: dict, cut_off: float = save_cutoff):
+    def __init__(self, initial_total: float, all_concentrations: list, enzymes: dict,
+                 cut_off: float = save_cutoff):
         self.all_concentrations = all_concentrations
         self.total_concentration = sum(all_concentrations)
         self.pmpi, self.pi4p, self.pip2, self.dag, self.pmpa, self.erpa, self.cdpdag, self.erpi = all_concentrations[:8]
@@ -93,10 +96,6 @@ class Error:
         self.enzymes = enzymes
         self.cdpdag_weight = 0.5  # Weight for CDPDAG error
         self.initial_total = initial_total
-
-    @property
-    def concentration_error(self) -> float:
-        return abs(self.total_concentration - self.initial_total)
 
     @property
     def pip2_error(self) -> float:
@@ -120,11 +119,10 @@ class Error:
 
     @property
     def total_error(self) -> float:
-        return self.concentration_error + self.pip2_error + self.pi4p_error + self.dag_error + self.cdpdag_error + self.pa_error
+        return self.pip2_error + self.pi4p_error + self.dag_error + self.cdpdag_error + self.pa_error
 
     def print_errors(self):
-        print(self.total_error, self.pip2_error, self.pi4p_error, self.pa_error, self.dag_error, self.cdpdag_error,
-              self.concentration_error)
+        print(self.total_error, self.pip2_error, self.pi4p_error, self.pa_error, self.dag_error, self.cdpdag_error)
 
     def record(self) -> None:
         """

@@ -39,6 +39,21 @@ def get_dag(para):
     return para[3] / (para[0] + para[7])
 
 
+def laza_pa_level_correction(error):
+    if error < 2:
+        return 5
+    else:
+        return 0
+
+
+def error_with_tolerance(mt, wt, expected, percentage_tol=5):
+    # We will give 5% tolerance
+    e1 = abs((mt / wt) - expected)
+    e2 = abs((mt / wt) - (expected + (expected * percentage_tol / 100)))
+    e3 = abs((mt / wt) - (expected - (expected * percentage_tol / 100)))
+    return min(e1, e2, e3)
+
+
 def calculate_rdga3_error(wt, rdga3):
     wt_pa_ratio = get_pa(wt)
     rdga3_pa_ratio = get_pa(rdga3)
@@ -46,7 +61,7 @@ def calculate_rdga3_error(wt, rdga3):
     wt_dag_ratio = get_dag(wt)
     rdga3_dag_ratio = get_dag(rdga3)
 
-    return abs((rdga3_pa_ratio / wt_pa_ratio) - 1) + abs((rdga3_dag_ratio / wt_dag_ratio) - 1)
+    return error_with_tolerance(rdga3_pa_ratio, wt_pa_ratio, 1) + error_with_tolerance(rdga3_dag_ratio, wt_dag_ratio, 1)
 
 
 def calculate_laza22_error(wt, laza22):
@@ -56,11 +71,13 @@ def calculate_laza22_error(wt, laza22):
     wt_dag_ratio = get_dag(wt)
     laza22_dag_ratio = get_dag(laza22)
 
-    return abs((laza22_pa_ratio / wt_pa_ratio) - 2.5) / 2.5 + abs((laza22_dag_ratio / wt_dag_ratio) - 1)
+    return error_with_tolerance(laza22_pa_ratio, wt_pa_ratio, 2.4, 10) + error_with_tolerance(laza22_dag_ratio,
+                                                                                              wt_dag_ratio, 1)
 
 
 def calculate_total_error(wt, rdga3, laza22):
-    return calculate_rdga3_error(wt, rdga3) + calculate_laza22_error(wt, laza22)
+    e = calculate_rdga3_error(wt, rdga3) + calculate_laza22_error(wt, laza22)
+    return e
 
 
 def save_parameters(parameters, error):
@@ -116,9 +133,9 @@ def calculate(system: str, kinetics: str):
     progress_counter = 0
     update_progress(progress_counter / outer_iterations, "lowest_error : %s" % lowest_error)
     for i in range(outer_iterations):
-        B, E = np.random.uniform(0.001, 20, 2)
+        B, E = np.random.uniform(0.01, 20, 2)
         A = np.random.uniform(alpha, 20)
-        D = np.random.uniform(0.001, alpha / gamma)
+        D = np.random.uniform(0.01, alpha / gamma)
         C = np.random.uniform((alpha - (gamma * D)) / delta, 20)
         plc = 7.7
         pitp = A * plc
