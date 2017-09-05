@@ -1,2 +1,4 @@
 .idea/
 *.pyc
+output/output.log
+output/script.log

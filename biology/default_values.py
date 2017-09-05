@@ -1,9 +1,9 @@
 # Parameter related
-v = 1
-k = 20
+default_v = 1
+default_k = 10
 
 min_v, max_v = 0.01, 10
-min_k, max_k = 0.1, 100
+min_k, max_k = 0.01, 1000
 
 rand_around_v = 1
 rand_around_k = 10
@@ -19,8 +19,8 @@ inner_iterations = 2000
 para_skip_threshold = 200
 save_cutoff = 0.15
 
-total_lipid_concentration = 10
+total_lipid_concentration = 100
 
 # ODE settings
-ode_end_time = 50000
-ode_slices = 5000
+ode_end_time = 5000
+ode_slices = 10000

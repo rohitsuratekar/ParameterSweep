@@ -27,8 +27,8 @@ class Enzyme:
     def __init__(self, name, **kwargs) -> None:
         super().__init__()
         self.name = name
-        self.v = kwargs.get("v") or v
-        self.k = kwargs.get("k") or k
+        self.v = kwargs.get("v") or default_v
+        self.k = kwargs.get("k") or default_k
         self.kinetics = kwargs.get("kinetics") or MASS_ACTION
         self.original_v = self.v
         self.original_k = self.k

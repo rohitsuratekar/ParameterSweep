@@ -1,3 +1,4 @@
+from utils.functions import update_progress
 from .helper import *
 
 
@@ -22,7 +23,6 @@ def reproduce(parent1: dict, parent2: dict, mutation_rate) -> dict:
         if np.random.choice([True, False]):
             parent1[i], parent2[i] = parent2[i], parent1[i]
     if np.random.choice([True, False], p=[mutation_rate, 1 - mutation_rate]):
-        print("mutation")
         parent1[np.random.choice(list(parent1.keys()))].randomize()
     return parent1
 
@@ -48,7 +48,15 @@ def renew_population(system: str, population: list, mutation_rate: float):
 
 def do_sweep(system: str, kinetics: str, population: int, mutation_rate: float):
     pop = create_population(population, kinetics)
-    old_fitness = -10000000
-    for i in range(100):
+    lowest_error = 100000
+    progress_counter = 0
+    update_progress(progress_counter / outer_iterations,
+                    "lowest_error: %s current_error : %s" % (lowest_error, lowest_error))
+    for i in range(outer_iterations):
         pop, current_fitness = renew_population(system, pop, mutation_rate)
-        print(current_fitness)
+        if current_fitness < lowest_error:
+            lowest_error = current_fitness
+
+        progress_counter += 1
+        update_progress(progress_counter / outer_iterations,
+                        "lowest_error: %s current_error : %s" % (lowest_error, current_fitness))
