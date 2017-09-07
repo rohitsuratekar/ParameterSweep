@@ -99,11 +99,11 @@ def save_parameters(parameters, error):
     p5tase = Enzyme(E_P5TASE, kinetics=kinetics, k=default_k)
     ip3tase = Enzyme(E_IP3_PTASE, kinetics=kinetics, k=default_k)
 
-    all = {x.name: x for x in
-           [pitp, pi4k, pip5k, plc, dagk, laza, patp, cds, pis, sink, source, p4tase, p5tase, ip3tase]}
+    all_enz = {x.name: x for x in
+               [pitp, pi4k, pip5k, plc, dagk, laza, patp, cds, pis, sink, source, p4tase, p5tase, ip3tase]}
 
     data = {}
-    for value in all.values():
+    for value in all_enz.values():
         data[value.name] = {
             "v": round(value.v, 4),
             "k": round(value.k, 4),
