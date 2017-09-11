@@ -1,10 +1,11 @@
 """
-Based on Nelder-Mead Simplex method of optimization
+Based on Nelder-Mead Simplex method of optimization.
+Best-Good-Worst sets are altered differently than that of original method.
 """
 
 from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
-from .helper import *
+from analysis.helper import *
 
 
 # Sort parameter set in order of their error

@@ -4,7 +4,7 @@ Calculates parameters for Mass Action kind of reactions from analytical solution
 
 from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
-from .helper import *
+from analysis.helper import *
 
 
 def calculate_steady_states(parameters):

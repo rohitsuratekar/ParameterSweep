@@ -6,7 +6,7 @@ Ideally this script will take old parameter, randomize ONLY source parameters an
 
 from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
-from .helper import *
+from analysis.helper import *
 
 
 def calculate_wild_type_error(parameters):

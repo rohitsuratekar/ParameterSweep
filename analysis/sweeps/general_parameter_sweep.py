@@ -1,11 +1,16 @@
+"""
+General parameter sweep based on randomize Monte-Carlo type estimation.
+It is also similar to "Simulated Annealing" but Instead of temperature, we used constant number of iterations.
+"""
+
+from analysis.helper import *
 from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
-from .helper import *
 
 
 def update_enzymes(enzyme_list: dict) -> None:
     """
-    Updates enzyme parameters.
+    Updates enzyme sweeps.
     Use this if you want to accept changes to enzyme properties after randomization
     :param enzyme_list: dict of enzyme to be udated
     :return: updated enzymes

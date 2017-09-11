@@ -1,8 +1,12 @@
+"""
+Generate parameter set for OPEN CYCLE 2 with MM kinetics.
+"""
+
 import math
 
+from analysis.helper import *
 from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
-from .helper import *
 
 
 def save_parameters(k_values, v_values, error):

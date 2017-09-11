@@ -1,5 +1,9 @@
+"""
+Parameter estimation based on Genetic Algorithm
+"""
+
+from analysis.helper import *
 from utils.functions import update_progress
-from .helper import *
 
 
 # Creates n different types of parameter values
@@ -17,7 +21,7 @@ def calculate_fitness(system: str, individual: dict):
     return Error(total_lipid_concentration, list(output[-1]), individual).total_error
 
 
-# Randomly swap parameters between two sets
+# Randomly swap sweeps between two sets
 def reproduce(parent1: dict, parent2: dict, mutation_rate) -> dict:
     for i in list(parent1.keys()):
         if np.random.choice([True, False]):

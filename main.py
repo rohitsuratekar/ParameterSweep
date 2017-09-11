@@ -1,4 +1,4 @@
-from analysis.convert_old import extract
+from analysis.mutants.mutant_check import calculate_mutant
 from constants.namespace import *
 
-extract(S_OPEN_1, MICHAELIS_MENTEN)
+calculate_mutant("input.txt", S_OPEN_1, MICHAELIS_MENTEN)
