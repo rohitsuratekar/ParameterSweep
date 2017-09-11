@@ -1,3 +1,7 @@
+"""
+General utility functions used in log of various scripts.
+"""
+
 import random
 import string
 import sys

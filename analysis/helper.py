@@ -1,9 +1,13 @@
+"""
+Helper methods used in all analysis
+"""
 import json
 
 import numpy as np
 from scipy.integrate import odeint
 
 from biology.component import *
+from biology.systems.open_cycle_1 import get_equations as open1
 from biology.systems.open_cycle_2 import get_equations as open2
 from constants.namespace import *
 from utils.log import OUTPUT
@@ -17,6 +21,14 @@ def get_equations(system: str):
     """
     if system == S_OPEN_2:
         return open2
+    elif system == S_OPEN_1:
+        return open1
+    else:
+        raise Exception("No such system found :%s" % system)
+
+
+def extract_enz_from_log(log_text: str):
+    return json.loads(log_text.split(":", 1)[1])["Enzymes"]
 
 
 def get_concentration_profile(system: str, initial_condition, parameters: dict, ode_time: int, slices: int):

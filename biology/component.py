@@ -1,3 +1,7 @@
+"""
+General objects used in all other simulations.
+"""
+
 from numpy.random import uniform
 
 from constants.namespace import MASS_ACTION, MICHAELIS_MENTEN

@@ -1,3 +1,9 @@
+"""
+Default values used in all analysis and simulations.
+User can change them here and they will be globally applied.
+Only "Total Lipid Level" will be included into logs
+"""
+
 # Parameter related
 default_v = 1
 default_k = 10
@@ -14,12 +20,12 @@ gamma = 0.008  # DAG
 delta = 0.1677  # PA
 epsilon = 0.001  # CDPDAG
 
-outer_iterations = 50000000
+outer_iterations = 5000000
 inner_iterations = 20000
 para_skip_threshold = 200
 save_cutoff = 0.15
 
-total_lipid_concentration = 100
+total_lipid_concentration = 200
 
 # ODE settings
 ode_end_time = 5000

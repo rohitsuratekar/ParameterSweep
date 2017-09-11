@@ -1,6 +1,6 @@
 """
-Copyright © 2017  Rohit Suratekar
-Code from this file is released under MIT Licence 2017.
+General namespace used in all logs and analysis.
+This will be usful for lot of dictionaries used and while extracting log information.
 """
 
 # Kinetic types

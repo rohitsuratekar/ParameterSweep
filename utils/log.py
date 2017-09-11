@@ -1,6 +1,7 @@
 """
 Copyright © 2017  Rohit Suratekar
 Code from this file is released under MIT Licence 2017.
+use "Log" for logging information and "OUTPUT" for saving information
 """
 import logging
 import os

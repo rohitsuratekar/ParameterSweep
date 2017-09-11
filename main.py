@@ -1,4 +1,4 @@
-from analysis.mm_kinetics_reverse_calculation import calculate
+from analysis.convert_old import extract
 from constants.namespace import *
 
-calculate(S_OPEN_2, MICHAELIS_MENTEN)
+extract(S_OPEN_1, MICHAELIS_MENTEN)

@@ -1,3 +1,7 @@
+"""
+General script settings.
+For changing system or parameter defaults, use "biology.default_values.py" file
+"""
 
 # User defined values
 OUTPUT_FOLDER = "output"
@@ -8,4 +12,3 @@ PRINT_TO_CONSOLE = True  # True if script log should be shown on console
 
 # Mutant analysis values
 NAME_OF_MUTANT_FILE = "mutant_para.txt"
-
