@@ -13,7 +13,8 @@ def clamp(number, min_value, max_value):
     :param number: Number
     :param min_value: Minimum allowed
     :param max_value: Maximum allowed
-    :return: min_value if value is less than min, max_value if greater or same value
+    :return: min_value if value is less than min, max_value if greater or
+    same value
 
    """
     return sorted((number, min_value, max_value))[1]
@@ -43,8 +44,9 @@ def update_progress(progress, message=""):
         progress = 1
         status = "Done...\r\n"
     block = int(round(bar_length * progress))
-    text = "\rPercent: [{0}] {1}% {2} {3}".format("#" * block + "-" * (bar_length - block), round(progress * 100, 2),
-                                                  status, message)
+    text = "\rPercent: [{0}] {1}% {2} {3}".format(
+        "#" * block + "-" * (bar_length - block), round(progress * 100, 2),
+        status, message)
     sys.stdout.write(text)
     sys.stdout.flush()
 

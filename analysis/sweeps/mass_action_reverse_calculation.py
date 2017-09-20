@@ -1,6 +1,5 @@
-"""
-Calculates parameters for Mass Action kind of reactions from analytical solution
-"""
+"""Calculates parameters for Mass Action kind of reactions from analytical
+solution """
 
 from analysis.helper import *
 from utils.functions import update_progress

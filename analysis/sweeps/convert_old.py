@@ -1,8 +1,7 @@
-"""
-This scripts converts old parameter values (which were calculated based on analytical expression"
-into exact ODE equations i.e. by using K_source as source.
-Ideally this script will take old parameter, randomize ONLY source parameters and check for error.
-"""
+"""This scripts converts old parameter values (which were calculated based
+on analytical expression" into exact ODE equations i.e. by using K_source as
+source. Ideally this script will take old parameter, randomize ONLY source
+parameters and check for error. """
 
 from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
@@ -61,12 +60,15 @@ def extract(system: str, kinetics: str):
     progress_counter = 0
     all_para = get_parameters()
     for para in all_para:
-        initial_con = get_random_concentrations(total_lipid_concentration, system)
+        initial_con = get_random_concentrations(total_lipid_concentration,
+                                                system)
         sanity_counter = 0
-        update_progress(progress_counter / len(all_para), "Extracting Old Parameters")
+        update_progress(progress_counter / len(all_para),
+                        "Extracting Old Parameters")
         while sanity_counter < 10000:
             para[E_SOURCE].k = np.random.uniform(min_k, max_k)
-            output = get_concentration_profile(system, initial_con, para, ode_end_time, ode_slices)
+            output = get_concentration_profile(system, initial_con, para,
+                                               ode_end_time, ode_slices)
             e = calculate_wild_type_error(output[-1])
             if e < save_cutoff:
                 save_para(para, e)

@@ -7,7 +7,8 @@ For changing system or parameter defaults, use "biology.default_values.py" file
 OUTPUT_FOLDER = "output"
 NAME_OF_SCRIPT_LOG_FILE = "script.log"  # Name of script Log file
 NAME_OF_OUTPUT_FILE = "output.log"  # Name of output file
-STORE_SCRIPT_LOG = True  # True if you want to store script log in external file. (Recommended : True)
+# True if you want to store script log in external file. (Recommended : True)
+STORE_SCRIPT_LOG = True
 PRINT_TO_CONSOLE = True  # True if script log should be shown on console
 
 # Mutant analysis values

@@ -29,13 +29,16 @@ LOG = logging.getLogger('log')
 LOG.setLevel(logging.INFO)
 LOG.addFilter(AppFilter())
 if STORE_SCRIPT_LOG:
-    log_file = logging.FileHandler(OUTPUT_FOLDER + "/" + NAME_OF_SCRIPT_LOG_FILE)
-    log_file.setFormatter(logging.Formatter('%(uid)s %(asctime)s %(filename)s : %(message)s'))
+    log_file = logging.FileHandler(
+        OUTPUT_FOLDER + "/" + NAME_OF_SCRIPT_LOG_FILE)
+    log_file.setFormatter(
+        logging.Formatter('%(uid)s %(asctime)s %(filename)s : %(message)s'))
     LOG.addHandler(log_file)
 if PRINT_TO_CONSOLE:
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(uid)s %(asctime)s %(filename)s : %(message)s')
+    formatter = logging.Formatter(
+        '%(uid)s %(asctime)s %(filename)s : %(message)s')
     console.setFormatter(formatter)
     LOG.addHandler(console)
 

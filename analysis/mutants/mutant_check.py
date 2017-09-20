@@ -23,7 +23,8 @@ def get_parameter_set(filename) -> list:
 
 
 def get_pa_ratio(wt, mt):
-    return ((mt[4] + mt[5]) / (mt[0] + mt[7])) / ((wt[4] + wt[5]) / (wt[0] + wt[7]))
+    return ((mt[4] + mt[5]) / (mt[0] + mt[7])) / (
+        (wt[4] + wt[5]) / (wt[0] + wt[7]))
 
 
 def get_dag_ratio(wt, mt):
@@ -46,13 +47,17 @@ def calculate_mutant(filename: str, system: str, kinetics: str):
     update_progress(progress_counter / len(all_para), "Calculating mutants")
     for para in all_para:
         enz = convert_to_enzyme(para)
-        initial_con = get_random_concentrations(total_lipid_concentration, system)
-        wt_output = get_concentration_profile(system, initial_con, enz, ode_end_time, ode_slices)
+        initial_con = get_random_concentrations(total_lipid_concentration,
+                                                system)
+        wt_output = get_concentration_profile(system, initial_con, enz,
+                                              ode_end_time, ode_slices)
         enz[E_DAGK].v *= 0.1
-        rdga_output = get_concentration_profile(system, initial_con, enz, ode_end_time, ode_slices)
+        rdga_output = get_concentration_profile(system, initial_con, enz,
+                                                ode_end_time, ode_slices)
         enz[E_DAGK].v *= 10
         enz[E_LAZA].v *= 0.1
-        laza_output = get_concentration_profile(system, initial_con, enz, ode_end_time, ode_slices)
+        laza_output = get_concentration_profile(system, initial_con, enz,
+                                                ode_end_time, ode_slices)
         enz[E_LAZA].v *= 10
 
         mutant_ratio = {
@@ -79,4 +84,5 @@ def calculate_mutant(filename: str, system: str, kinetics: str):
         }
         OUTPUT.info(json.dumps(save_values, sort_keys=True))
         progress_counter += 1
-        update_progress(progress_counter / len(all_para), "Calculating mutants")
+        update_progress(progress_counter / len(all_para),
+                        "Calculating mutants")

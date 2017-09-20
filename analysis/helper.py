@@ -31,7 +31,8 @@ def extract_enz_from_log(log_text: str):
     return json.loads(log_text.split(":", 1)[1])["Enzymes"]
 
 
-def get_concentration_profile(system: str, initial_condition, parameters: dict, ode_time: int, slices: int):
+def get_concentration_profile(system: str, initial_condition, parameters: dict,
+                              ode_time: int, slices: int):
     """
     Solves ODE and returns output array
     :param system: topology or known model
@@ -42,7 +43,8 @@ def get_concentration_profile(system: str, initial_condition, parameters: dict, 
     :return: Output array
     """
     time = np.linspace(0, ode_time, slices)
-    output = odeint(get_equations(system), initial_condition, time, args=(parameters, 0))
+    output = odeint(get_equations(system), initial_condition, time,
+                    args=(parameters, 0))
     return output
 
 
@@ -88,7 +90,8 @@ def get_random_enzymes(kinetics) -> dict:
     p5tase = RandomEnzyme(E_P5TASE, kinetics=kinetics)
     ip3tase = RandomEnzyme(E_IP3_PTASE, kinetics=kinetics)
     return {x.name: x for x in
-            [pitp, pi4k, pip5k, plc, dagk, laza, patp, cds, pis, sink, source, p4tase, p5tase, ip3tase]}
+            [pitp, pi4k, pip5k, plc, dagk, laza, patp, cds, pis, sink, source,
+             p4tase, p5tase, ip3tase]}
 
 
 class Error:
@@ -97,11 +100,13 @@ class Error:
     """
     total_files_saved = 0
 
-    def __init__(self, initial_total: float, all_concentrations: list, enzymes: dict,
+    def __init__(self, initial_total: float, all_concentrations: list,
+                 enzymes: dict,
                  cut_off: float = save_cutoff):
         self.all_concentrations = all_concentrations
         self.total_concentration = sum(all_concentrations)
-        self.pmpi, self.pi4p, self.pip2, self.dag, self.pmpa, self.erpa, self.cdpdag, self.erpi = all_concentrations[:8]
+        self.pmpi, self.pi4p, self.pip2, self.dag, self.pmpa, self.erpa, self.cdpdag, self.erpi = all_concentrations[
+                                                                                                  :8]
         self.pa = self.erpa + self.pmpa
         self.pi = self.erpi + self.pmpi
         self.cut_off = cut_off
@@ -123,7 +128,8 @@ class Error:
 
     @property
     def cdpdag_error(self) -> float:
-        return abs((self.cdpdag / self.pi) - epsilon) * self.cdpdag_weight / epsilon
+        return abs(
+            (self.cdpdag / self.pi) - epsilon) * self.cdpdag_weight / epsilon
 
     @property
     def pa_error(self) -> float:
@@ -134,7 +140,8 @@ class Error:
         return self.pip2_error + self.pi4p_error + self.dag_error + self.cdpdag_error + self.pa_error
 
     def print_errors(self):
-        print(self.total_error, self.pip2_error, self.pi4p_error, self.pa_error, self.dag_error, self.cdpdag_error)
+        print(self.total_error, self.pip2_error, self.pi4p_error,
+              self.pa_error, self.dag_error, self.cdpdag_error)
 
     def record(self) -> None:
         """

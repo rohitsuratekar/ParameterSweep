@@ -25,7 +25,8 @@ def randomize_within(number, around_range, min_allowed, max_allowed):
 
 class Enzyme:
     """
-    General Enzyme class for with all essential features for analysis and parameter sweep
+    General Enzyme class for with all essential features for analysis and
+    parameter sweep
     """
 
     def __init__(self, name, **kwargs) -> None:
@@ -39,12 +40,14 @@ class Enzyme:
 
     @classmethod
     def make_with_values(cls, name: str, values: dict):
-        enz = cls(name, v=values["v"], k=values["k"], kinetics=values["kinetics"])
+        enz = cls(name, v=values["v"], k=values["k"],
+                  kinetics=values["kinetics"])
         return enz
 
     @property
     def properties(self) -> dict:
-        return {"v": self.v, "k": self.k, "kinetics": self.kinetics, "name": self.name}
+        return {"v": self.v, "k": self.k, "kinetics": self.kinetics,
+                "name": self.name}
 
     def copy_properties(self, properties: dict) -> None:
         self.v = properties.get("v")

@@ -23,8 +23,10 @@ def get_equations(concentrations: list, time: tuple, *args) -> list:
     d_pi4p = pi4k.react_with(pmpi) - pip5k.react_with(pi4p)
     d_pip2 = pip5k.react_with(pi4p) - plc.react_with(pip2)
     d_dag = plc.react_with(pip2) - dagk.react_with(dag)
-    d_pmpa = dagk.react_with(dag) - laza.react_with(pmpa) - patp.react_with(pmpa)
-    d_erpa = patp.react_with(pmpa) - cds.react_with(erpa) + source.react_with(None)
+    d_pmpa = dagk.react_with(dag) - laza.react_with(pmpa) - patp.react_with(
+        pmpa)
+    d_erpa = patp.react_with(pmpa) - cds.react_with(erpa) + source.react_with(
+        None)
     d_cdpdag = cds.react_with(erpa) - pis.react_with(cdpdag)
     d_erpi = pis.react_with(cdpdag) - pitp.react_with(erpi)
 

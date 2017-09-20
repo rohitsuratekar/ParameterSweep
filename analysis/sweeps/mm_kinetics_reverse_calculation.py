@@ -30,7 +30,8 @@ def save_parameters(k_values, v_values, error):
     ip3tase = Enzyme(E_IP3_PTASE, kinetics=kinetics, k=default_k)
 
     all_enz = {x.name: x for x in
-               [pitp, pi4k, pip5k, plc, dagk, laza, patp, cds, pis, sink, source, p4tase, p5tase, ip3tase]}
+               [pitp, pi4k, pip5k, plc, dagk, laza, patp, cds, pis, sink,
+                source, p4tase, p5tase, ip3tase]}
 
     data = {}
     for value in all_enz.values():
@@ -82,7 +83,9 @@ def get_pmpa_related(dag):
 
 def calculate(system: str, kinetics: str):
     if system != S_OPEN_2 and kinetics != MICHAELIS_MENTEN:
-        raise Exception(" This analysis is only for OPEN Cycle 2 Michaelis-Menten reactions")
+        raise Exception(
+            "This analysis is only for OPEN Cycle 2 Michaelis-Menten "
+            "reactions")
 
     log_data = {
         "UID": CURRENT_JOB,
@@ -102,7 +105,8 @@ def calculate(system: str, kinetics: str):
 
         dag = (k_sink * k_source) / (v_sink - k_source)
 
-        pmpa, v_patp, k_patp, v_laza, k_laza, v_dagk, k_dagk = get_pmpa_related(dag)
+        pmpa, v_patp, k_patp, v_laza, k_laza, v_dagk, k_dagk = get_pmpa_related(
+            dag)
 
         if pmpa > 0:
             m2 = v_patp * pmpa / (k_patp + pmpa)
@@ -114,8 +118,11 @@ def calculate(system: str, kinetics: str):
 
             m = v_cds * erpa / (k_cds + erpa)
 
-            k_pis, k_pitp, k_pi4k, k_pip5k, k_plc = np.random.uniform(min_k, max_k, 5)
-            v_pis, v_pitp, v_pi4k, v_pip5k, v_plc = np.random.uniform(m, m + 10, 5)
+            k_pis, k_pitp, k_pi4k, k_pip5k, k_plc = np.random.uniform(min_k,
+                                                                      max_k, 5)
+            v_pis, v_pitp, v_pi4k, v_pip5k, v_plc = np.random.uniform(m,
+                                                                      m + 10,
+                                                                      5)
 
             cdpdag = k_pis * m / (v_pis - m)
             erpi = k_pitp * m / (v_pitp - m)
@@ -123,7 +130,8 @@ def calculate(system: str, kinetics: str):
             pi4p = k_pip5k * m / (v_pip5k - m)
             pip2 = k_plc * m / (v_plc - m)
 
-            e = calculate_wild_type_error([pmpi, pi4p, pip2, dag, pmpa, erpa, cdpdag, erpi])
+            e = calculate_wild_type_error(
+                [pmpi, pi4p, pip2, dag, pmpa, erpa, cdpdag, erpi])
 
             if e < smallest_error:
                 smallest_error = e
@@ -132,4 +140,5 @@ def calculate(system: str, kinetics: str):
                     all_v = v_pitp, v_pi4k, v_pip5k, v_plc, v_dagk, v_sink, v_laza, v_patp, 1, v_cds, v_pis
                     save_parameters(all_k, all_v, smallest_error)
 
-        update_progress(i / outer_iterations, "lowest_error : %s" % smallest_error)
+        update_progress(i / outer_iterations,
+                        "lowest_error : %s" % smallest_error)
