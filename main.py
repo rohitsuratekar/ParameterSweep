@@ -1,4 +1,4 @@
-from analysis.mutants.mutant_check import calculate_mutant
+from analysis.mutants.plot_mutant import plot
 from constants.namespace import *
 
-calculate_mutant("input.txt", S_OPEN_1, MICHAELIS_MENTEN)
+plot(S_OPEN_1)
