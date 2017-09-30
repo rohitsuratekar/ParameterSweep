@@ -5,7 +5,8 @@ from analysis.helper import *
 
 
 def get_pa_ratio(wt, mt):
-    return ((mt[4] + mt[5]) / (mt[0] + mt[7])) / ((wt[4] + wt[5]) / (wt[0] + wt[7]))
+    return ((mt[4] + mt[5]) / (mt[0] + mt[7])) / (
+    (wt[4] + wt[5]) / (wt[0] + wt[7]))
 
 
 def get_dag_ratio(wt, mt):
@@ -25,22 +26,26 @@ def get_parameter_set() -> dict:
 def plot(system: str):
     enz = get_parameter_set()
     initial_con = get_random_concentrations(total_lipid_concentration, system)
-    wt_output = get_concentration_profile(system, initial_con, enz, ode_end_time, ode_slices)
+    wt_output = get_concentration_profile(system, initial_con, enz,
+                                          ode_end_time, ode_slices)
     enz[E_DAGK].v *= 0.1
-    rdga_output = get_concentration_profile(system, initial_con, enz, ode_end_time, ode_slices)
+    rdga_output = get_concentration_profile(system, initial_con, enz,
+                                            ode_end_time, ode_slices)
     enz[E_DAGK].v *= 10
     enz[E_LAZA].v *= 0.1
-    laza_output = get_concentration_profile(system, initial_con, enz, ode_end_time, ode_slices)
+    laza_output = get_concentration_profile(system, initial_con, enz,
+                                            ode_end_time, ode_slices)
     enz[E_LAZA].v *= 10
 
     fig = plt.figure()
     gs = gridspec.GridSpec(8, 5)
     wt = [1, 1]
-    rdga = [get_pa_ratio(wt_output[-1], rdga_output[-1]), get_dag_ratio(wt_output[-1], rdga_output[-1])]
-    laza = [get_pa_ratio(wt_output[-1], laza_output[-1]), get_dag_ratio(wt_output[-1], laza_output[-1])]
+    rdga = [get_pa_ratio(wt_output[-1], rdga_output[-1]),
+            get_dag_ratio(wt_output[-1], rdga_output[-1])]
+    laza = [get_pa_ratio(wt_output[-1], laza_output[-1]),
+            get_dag_ratio(wt_output[-1], laza_output[-1])]
     ind = np.arange(2)
     bar_width = 0.35
-
     ax2 = fig.add_subplot(gs[0:3, 1:4])
 
     ax2.bar(ind, wt, bar_width,

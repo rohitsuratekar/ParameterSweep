@@ -4,7 +4,6 @@ from constants.namespace import *
 
 def get_equations(concentrations: list, time: tuple, *args) -> list:
     assert len(concentrations) == 8, "You should provide all concentrations"
-
     enzyme_list = args[0]  # type: dict
     pitp = enzyme_list.get(E_PITP)  # type: Enzyme
     pip5k = enzyme_list.get(E_PIP5K)  # type: Enzyme
