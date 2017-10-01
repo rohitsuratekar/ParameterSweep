@@ -33,38 +33,43 @@ def get_parameter_set(filename) -> list:
     return all_para
 
 
-def save_plot(rdga, laza, lowest_para, is_dag):
+def save_plot(rdga, laza, lowest_para, is_dag, system):
     plt.clf()
     if is_dag:
         val = 'DAG'
         plt.xlim(-10, 50)
         plt.ylim(0, 5)
-        c = 'b'
-        save_name = 'dag.png'
+        c = '#3F51B5'
+        save_name = system + '_dag.png'
         wt = 1
     else:
-        c = 'r'
+        c = '#F44336'
         val = 'PA_{total}'
         plt.xlim(0, 4)
         plt.ylim(0, 10)
-        save_name = 'pa.png'
+        save_name = system + '_pa.png'
         wt = 2.4
 
-    plt.scatter(rdga, laza, marker='o', alpha=0.3, color=c)
+    plt.scatter(rdga, laza, marker='o', color=c, alpha=0.5)
     plt.axhline(y=wt, color='grey', linestyle='--')
     plt.axvline(x=1, color='grey', linestyle='--')
-
-    plt.scatter(lowest_para.rdga_dag, lowest_para.laza_dag, marker='*',
-                color='k')
-
+    plt.title(system)
     plt.annotate('$%s/PI_{total}$' % val, xy=(0.8, 0.95),
                  xycoords='axes fraction')
     plt.xlabel('Ratio in $rdgA^{3}$')
     plt.ylabel('Ratio in $laza^{22}$')
+
+    if is_dag:
+        plt.scatter(lowest_para.rdga_dag, lowest_para.laza_dag, marker='*',
+                    color='k')
+    else:
+        plt.scatter(lowest_para.rdga_pa, lowest_para.laza_pa, marker='*',
+                    color='k')
+
     plt.savefig(save_name, format='png', dpi=300)
 
 
-def visualize(filename):
+def visualize(filename, system):
     para = get_parameter_set(filename)
     rdga_dag = []
     rdga_pa = []
@@ -82,5 +87,5 @@ def visualize(filename):
             if p.error < lowest_para.error:
                 lowest_para = p
 
-    save_plot(rdga_dag, laza_dag, lowest_para, True)
-    save_plot(rdga_pa, laza_pa, lowest_para, False)
+    save_plot(rdga_dag, laza_dag, lowest_para, True, system)
+    save_plot(rdga_pa, laza_pa, lowest_para, False, system)

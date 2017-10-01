@@ -7,6 +7,8 @@ import numpy as np
 from scipy.integrate import odeint
 
 from biology.component import *
+from biology.systems.closed_irreversible import get_equations as irreversible
+from biology.systems.closed_reversible import get_equations as reversible
 from biology.systems.open_cycle_1 import get_equations as open1
 from biology.systems.open_cycle_2 import get_equations as open2
 from constants.namespace import *
@@ -23,6 +25,10 @@ def get_equations(system: str):
         return open2
     elif system == S_OPEN_1:
         return open1
+    elif system == S_CLOSED_REVERSIBLE:
+        return reversible
+    elif system == S_ONLY_FORWARD:
+        return irreversible
     else:
         raise Exception("No such system found :%s" % system)
 
