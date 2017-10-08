@@ -4,7 +4,8 @@ from analysis.helper import *
 
 
 class DataObject:
-    def __init__(self, enzymes, mutants):
+    def __init__(self, enzymes, mutants, original):
+        self.original = original
         self.enzymes = enzymes
         self.mutants = mutants
         self.laza = mutants['LAZA']
@@ -28,9 +29,19 @@ def get_parameter_set(filename) -> list:
                 para[key] = Enzyme.make_with_values(key, raw[key])
 
             all_para.append(
-                DataObject(para, json.loads(line.split(":", 1)[1])["Mutants"]))
+                DataObject(para, json.loads(line.split(":", 1)[1])[
+                    "Mutants"], line))
 
     return all_para
+
+
+def print_enzymes(all_enzymes):
+    for e in all_enzymes:
+        print(
+            "%s\t%s\t%s" % (all_enzymes[e].properties.get('name').upper(),
+                            all_enzymes[
+                                e].properties.get('v'),
+                            all_enzymes[e].properties.get('k')))
 
 
 def save_plot(rdga, laza, lowest_para, is_dag, system):
@@ -86,6 +97,9 @@ def visualize(filename, system):
         else:
             if p.error < lowest_para.error:
                 lowest_para = p
+
+    print_enzymes(lowest_para.enzymes)
+    print(lowest_para.original)
 
     save_plot(rdga_dag, laza_dag, lowest_para, True, system)
     save_plot(rdga_pa, laza_pa, lowest_para, False, system)
