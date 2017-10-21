@@ -1,3 +1,4 @@
+from analysis.mutants.experiment import light_flash
 from analysis.mutants.mutant_check import calculate_mutant
 from analysis.mutants.plot_mutant import plot
 from analysis.mutants.visualize import visualize
@@ -18,4 +19,8 @@ def plot_mutant():
     plot(system)
 
 
-vis()
+def exp():
+    light_flash(system)
+
+
+exp()
