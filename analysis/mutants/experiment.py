@@ -1,3 +1,7 @@
+"""
+Do light flash experiment with given parameter set in "para.txt"
+"""
+
 import matplotlib.pylab as plt
 
 from analysis.helper import *

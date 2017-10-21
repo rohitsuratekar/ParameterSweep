@@ -1,3 +1,7 @@
+"""
+Plots bar graph of RDGA and LAZA mutant given parameter set in "para.txtx" file
+"""
+
 import matplotlib.pylab as plt
 from matplotlib import gridspec
 
@@ -6,7 +10,7 @@ from analysis.helper import *
 
 def get_pa_ratio(wt, mt):
     return ((mt[4] + mt[5]) / (mt[0] + mt[7])) / (
-    (wt[4] + wt[5]) / (wt[0] + wt[7]))
+        (wt[4] + wt[5]) / (wt[0] + wt[7]))
 
 
 def get_dag_ratio(wt, mt):

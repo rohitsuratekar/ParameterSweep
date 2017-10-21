@@ -31,7 +31,16 @@ def get_dag_ratio(wt, mt):
     return (mt[3] / (mt[0] + mt[7])) / (wt[3] / (wt[0] + wt[7]))
 
 
-def calculate_mutant(filename: str, system: str, kinetics: str):
+def calculate_mutant(filename: str, system: str, kinetics: str,
+                     expression_levels: list) -> None:
+    """
+    :param filename: Name of file which contains parameter values
+    :param system: System Name
+    :param kinetics: Type of Kinetics
+    :param expression_levels: Expression level w.r.t. Wild Type for mutant
+    analysis
+    """
+
     log_data = {
         "UID": CURRENT_JOB,
         "System": system,
@@ -47,29 +56,35 @@ def calculate_mutant(filename: str, system: str, kinetics: str):
     update_progress(progress_counter / len(all_para), "Calculating mutants")
     for para in all_para:
         enz = convert_to_enzyme(para)
-        initial_con = get_random_concentrations(total_lipid_concentration,
-                                                system)
-        wt_output = get_concentration_profile(system, initial_con, enz,
-                                              ode_end_time, ode_slices)
-        enz[E_DAGK].v *= 0.1
-        rdga_output = get_concentration_profile(system, initial_con, enz,
-                                                ode_end_time, ode_slices)
-        enz[E_DAGK].v *= 10
-        enz[E_LAZA].v *= 0.1
-        laza_output = get_concentration_profile(system, initial_con, enz,
-                                                ode_end_time, ode_slices)
-        enz[E_LAZA].v *= 10
+        mutant_ratio = {}
+        for expression in expression_levels:
+            initial_con = get_random_concentrations(total_lipid_concentration,
+                                                    system)
+            wt_output = get_concentration_profile(system, initial_con, enz,
+                                                  ode_end_time, ode_slices)
+            enz[E_DAGK].v *= expression
+            rdga_output = get_concentration_profile(system, initial_con, enz,
+                                                    ode_end_time, ode_slices)
+            enz[E_DAGK].v *= (1 / expression)
+            enz[E_LAZA].v *= expression
+            laza_output = get_concentration_profile(system, initial_con, enz,
+                                                    ode_end_time, ode_slices)
+            enz[E_LAZA].v *= (1 / expression)
 
-        mutant_ratio = {
-            "RDGA": {
-                "PA": round(get_pa_ratio(wt_output[-1], rdga_output[-1]), 4),
-                "DAG": round(get_dag_ratio(wt_output[-1], rdga_output[-1]), 4)
-            },
-            "LAZA": {
-                "PA": round(get_pa_ratio(wt_output[-1], laza_output[-1]), 4),
-                "DAG": round(get_dag_ratio(wt_output[-1], laza_output[-1]), 4)
-            },
-        }
+            mutant_ratio[expression] = {
+                "RDGA": {
+                    "PA": round(get_pa_ratio(wt_output[-1], rdga_output[-1]),
+                                4),
+                    "DAG": round(get_dag_ratio(wt_output[-1], rdga_output[-1]),
+                                 4)
+                },
+                "LAZA": {
+                    "PA": round(get_pa_ratio(wt_output[-1], laza_output[-1]),
+                                4),
+                    "DAG": round(get_dag_ratio(wt_output[-1], laza_output[-1]),
+                                 4)
+                },
+            }
 
         data = {}
         for value in enz.values():
