@@ -106,6 +106,7 @@ def visualize(filename, system):
     laza_dag = defaultdict(list)
     laza_pa = defaultdict(list)
     lowest_para = None
+    top_para = []
     for p in para:
         for k in p.expressions:
             rdga_dag[k].append(p.rdga_dag[k])
@@ -113,16 +114,25 @@ def visualize(filename, system):
             laza_dag[k].append(p.laza_dag[k])
             laza_pa[k].append(p.laza_pa[k])
             if lowest_para is None:
+                top_para.append(p)
                 lowest_para = p
             else:
                 if p.error[k] < lowest_para.error[k]:
                     lowest_para = p
+                    top_para.insert(0, p)
 
     print_enzymes(lowest_para.enzymes)
     print(lowest_para.original)
 
     save_plot(rdga_dag, laza_dag, lowest_para, True, system)
     save_plot(rdga_pa, laza_pa, lowest_para, False, system)
+    para_print = 0
+    with open("top_para.txt", "w") as f:
+        for p in top_para:
+            print(p.original.strip(), file=f, end='\n')
+            para_print += 1
+            if para_print > 10:
+                break
 
 
 def plot_histograms(values, mutant, lipid):
@@ -168,3 +178,59 @@ def visualize_sensitivity(filename, system):
     plot_histograms(rdga_pa, "$rdgA^3$", "PA")
     plot_histograms(laza_dag, "$laza^{22}$", "DAG")
     plot_histograms(laza_pa, "$laza^{22}$", "PA")
+
+
+def get_pa_ratio(wt, mt):
+    return ((mt[4] + mt[5]) / (mt[0] + mt[7])) / (
+        (wt[4] + wt[5]) / (wt[0] + wt[7]))
+
+
+def get_dag_ratio(wt, mt):
+    return (mt[3] / (mt[0] + mt[7])) / (wt[3] / (wt[0] + wt[7]))
+
+
+def color_y_axis(ax, color):
+    """Color your axes."""
+    for t in ax.get_yticklabels():
+        t.set_color(color)
+    return None
+
+
+def single_para_sensitivity(system: str):
+    c1 = '#F44336'
+    c2 = '#3F51B5'
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+
+    for para in get_parameter_set("analysis/mutants/top_para.txt"):
+        initial_con = get_random_concentrations(total_lipid_concentration,
+                                                system)
+        wt_output = get_concentration_profile(system, initial_con,
+                                              para.enzymes,
+                                              ode_end_time, ode_slices)
+
+        expression = np.arange(0.1, 1.0, 0.03)
+        ratio_pa = []
+        ratio_dag = []
+        for i in expression:
+            para.enzymes[E_LAZA].v *= i
+            output = get_concentration_profile(system, initial_con,
+                                               para.enzymes,
+                                               ode_end_time, ode_slices)
+            para.enzymes[E_LAZA].v *= (1 / i)
+
+            ratio_pa.append(get_pa_ratio(wt_output[-1], output[-1]))
+            ratio_dag.append(get_dag_ratio(wt_output[-1], output[-1]))
+
+        ax1.plot(expression, ratio_pa, color=c1)
+
+        ax2.plot(expression, ratio_dag, color=c2)
+        ax2.set_ylabel('$DAG/PI_{total}$')
+
+    ax1.set_xlabel("$LAZA$ activity (wrt WT)")
+    ax1.set_ylabel('$PA_{total}/PI_{total}$')
+    color_y_axis(ax1, c1)
+    color_y_axis(ax2, c2)
+
+    plt.savefig("para_sensitivity.png", format='png', dpi=300,
+                bbox_inches='tight')
