@@ -196,44 +196,43 @@ def color_y_axis(ax, color):
 
 
 def single_para_sensitivity(system: str):
-    c1 = '#F44336'
-    c2 = '#3F51B5'
-    fig, ax1 = plt.subplots()
-    # ax2 = ax1.twinx()
+    fig, axs = plt.subplots(3, 3)
+    axs = axs.ravel()
+    para_set = get_parameter_set("analysis/mutants/top_para.txt")
+    plot_number = 0
+    colors = ["#FFEBEE", "#FFCDD2", "#EF9A9A", "#E57373", "#EF5350", "#F44336",
+              "#E53935", "#D32F2F", "#C62828", "#B71C1C"]
 
-    for para in get_parameter_set("analysis/mutants/top_para.txt"):
-        initial_con = get_random_concentrations(total_lipid_concentration,
-                                                system)
-        wt_output = get_concentration_profile(system, initial_con,
-                                              para.enzymes,
-                                              ode_end_time, ode_slices)
-
-        expression = np.arange(0.1, 1.0, 0.2)
+    for expression in np.linspace(0.01, 0.9, num=9):
         ratio_pa = []
         ratio_dag = []
-        for i in expression:
-            para.enzymes[E_LAZA].v *= i
+        for para in para_set:
+            initial_con = get_random_concentrations(total_lipid_concentration,
+                                                    system)
+            wt_output = get_concentration_profile(system, initial_con,
+                                                  para.enzymes,
+                                                  ode_end_time, ode_slices)
+
+            para.enzymes[E_LAZA].v *= expression
             output = get_concentration_profile(system, initial_con,
                                                para.enzymes,
                                                ode_end_time, ode_slices)
-            para.enzymes[E_LAZA].v *= (1 / i)
+            para.enzymes[E_LAZA].v *= (1 / expression)
 
             ratio_pa.append(get_pa_ratio(wt_output[-1], output[-1]))
             ratio_dag.append(get_dag_ratio(wt_output[-1], output[-1]))
 
-        ax1.plot(expression, ratio_pa, color=c1)
+        axs[plot_number].scatter(ratio_dag, ratio_pa,
+                                 color=colors[plot_number + 1])
+        axs[plot_number].axhline(y=2.5, linestyle="--", color="grey",
+                                 alpha=0.5)
+        axs[plot_number].axvline(x=1, linestyle="--", color="grey",
+                                 alpha=0.5)
+        axs[plot_number].set_title("%.2f x WT" % expression)
+        color_y_axis(axs[plot_number], "grey")
+        plot_number += 1
 
-        # ax2.plot(expression, ratio_dag, color=c2)
-        # ax2.set_ylabel('$DAG/PI_{total}$')
-
-    ax1.set_xlabel("$LAZA$ activity (wrt WT)")
-    ax1.set_ylabel('$PA_{total}/PI_{total}$')
-    ax1.axhline(y=2.5, linestyle="--")
-    ax1.axvline(x=0.1, linestyle="--")
-    ax1.grid(linestyle="--")
-    color_y_axis(ax1, c1)
-    # color_y_axis(ax2, c2)
-
+    fig.tight_layout()
     plt.savefig("para_sensitivity.png", format='png', dpi=300,
                 bbox_inches='tight')
     plt.show()

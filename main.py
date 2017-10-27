@@ -4,7 +4,7 @@ from analysis.mutants.plot_mutant import plot
 from analysis.mutants.visualize import visualize, single_para_sensitivity
 from constants.namespace import *
 
-system = S_OPEN_2
+system = S_OPEN_1
 
 
 def calculate():
@@ -27,4 +27,4 @@ def single():
     single_para_sensitivity(system)
 
 
-single()
+calculate()
