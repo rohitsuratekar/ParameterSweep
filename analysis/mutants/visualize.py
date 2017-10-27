@@ -106,7 +106,7 @@ def visualize(filename, system):
     laza_dag = defaultdict(list)
     laza_pa = defaultdict(list)
     lowest_para = None
-    top_para = []
+
     for p in para:
         for k in p.expressions:
             rdga_dag[k].append(p.rdga_dag[k])
@@ -114,12 +114,10 @@ def visualize(filename, system):
             laza_dag[k].append(p.laza_dag[k])
             laza_pa[k].append(p.laza_pa[k])
             if lowest_para is None:
-                top_para.append(p)
                 lowest_para = p
             else:
                 if p.error[k] < lowest_para.error[k]:
                     lowest_para = p
-                    top_para.insert(0, p)
 
     print_enzymes(lowest_para.enzymes)
     print(lowest_para.original)
@@ -127,12 +125,13 @@ def visualize(filename, system):
     save_plot(rdga_dag, laza_dag, lowest_para, True, system)
     save_plot(rdga_pa, laza_pa, lowest_para, False, system)
     para_print = 0
+    para.sort(key=lambda x: x.error["0.1"])
     with open("top_para.txt", "w") as f:
-        for p in top_para:
+        for p in para:
             print(p.original.strip(), file=f, end='\n')
             para_print += 1
-            if para_print > 10:
-                break
+            # if para_print > 1000:
+            #     break
 
 
 def plot_histograms(values, mutant, lipid):
@@ -200,7 +199,7 @@ def single_para_sensitivity(system: str):
     c1 = '#F44336'
     c2 = '#3F51B5'
     fig, ax1 = plt.subplots()
-    ax2 = ax1.twinx()
+    # ax2 = ax1.twinx()
 
     for para in get_parameter_set("analysis/mutants/top_para.txt"):
         initial_con = get_random_concentrations(total_lipid_concentration,
@@ -209,7 +208,7 @@ def single_para_sensitivity(system: str):
                                               para.enzymes,
                                               ode_end_time, ode_slices)
 
-        expression = np.arange(0.1, 1.0, 0.03)
+        expression = np.arange(0.1, 1.0, 0.2)
         ratio_pa = []
         ratio_dag = []
         for i in expression:
@@ -224,13 +223,17 @@ def single_para_sensitivity(system: str):
 
         ax1.plot(expression, ratio_pa, color=c1)
 
-        ax2.plot(expression, ratio_dag, color=c2)
-        ax2.set_ylabel('$DAG/PI_{total}$')
+        # ax2.plot(expression, ratio_dag, color=c2)
+        # ax2.set_ylabel('$DAG/PI_{total}$')
 
     ax1.set_xlabel("$LAZA$ activity (wrt WT)")
     ax1.set_ylabel('$PA_{total}/PI_{total}$')
+    ax1.axhline(y=2.5, linestyle="--")
+    ax1.axvline(x=0.1, linestyle="--")
+    ax1.grid(linestyle="--")
     color_y_axis(ax1, c1)
-    color_y_axis(ax2, c2)
+    # color_y_axis(ax2, c2)
 
     plt.savefig("para_sensitivity.png", format='png', dpi=300,
                 bbox_inches='tight')
+    plt.show()
