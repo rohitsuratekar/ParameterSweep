@@ -2,9 +2,10 @@ from analysis.mutants.experiment import light_flash
 from analysis.mutants.mutant_check import calculate_mutant
 from analysis.mutants.plot_mutant import plot
 from analysis.mutants.visualize import visualize, single_para_sensitivity
+from analysis.sweeps.improve_parameter import improve
 from constants.namespace import *
 
-system = S_OPEN_1
+system = S_OPEN_2
 
 
 def calculate():
@@ -27,4 +28,8 @@ def single():
     single_para_sensitivity(system)
 
 
-calculate()
+def imp():
+    improve(system, MICHAELIS_MENTEN, 'analysis/mutants/para.txt')
+
+
+imp()

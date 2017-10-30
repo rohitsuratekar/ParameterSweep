@@ -33,7 +33,7 @@ with open("test_para.txt", "r") as f:
 
         initial_con = get_random_concentrations(100, S_OPEN_2)
 
-        end_time = 1000
+        end_time = 50000
         output = get_concentration_profile(S_OPEN_2, initial_con, enzymes, end_time, 10000)
 
         enzymes[E_LAZA].k *= 0.1
@@ -44,4 +44,4 @@ with open("test_para.txt", "r") as f:
 
         time = np.linspace(0, end_time, 10000)
         plt.plot(time, output)
-        # plt.show()
+        plt.show()

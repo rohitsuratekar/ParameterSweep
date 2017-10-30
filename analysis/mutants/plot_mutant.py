@@ -27,6 +27,18 @@ def get_parameter_set() -> dict:
             return para
 
 
+def print_rdga(val):
+    print("RDGA")
+    print("PA Ratio: %.3f (error: %.3f)" % (val[0], (val[0] - 1) * 100 / 1))
+    print("DAG Ratio: %.3f (error: %.3f)" % (val[1], (val[1] - 1) * 100 / 1))
+
+
+def print_laza(val):
+    print("LAZA")
+    print("PA Ratio: %.3f (error: %.3f)" % (val[0], (val[0] - 2.5) * 100 / 1))
+    print("DAG Ratio: %.3f (error: %.3f)" % (val[1], (val[1] - 1) * 100 / 1))
+
+
 def plot(system: str):
     enz = get_parameter_set()
     initial_con = get_random_concentrations(total_lipid_concentration, system)
@@ -48,6 +60,10 @@ def plot(system: str):
             get_dag_ratio(wt_output[-1], rdga_output[-1])]
     laza = [get_pa_ratio(wt_output[-1], laza_output[-1]),
             get_dag_ratio(wt_output[-1], laza_output[-1])]
+
+    print_rdga(rdga)
+    print_laza(laza)
+
     ind = np.arange(2)
     bar_width = 0.35
     ax2 = fig.add_subplot(gs[0:3, 1:4])

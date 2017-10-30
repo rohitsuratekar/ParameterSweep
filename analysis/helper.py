@@ -15,6 +15,19 @@ from constants.namespace import *
 from utils.log import OUTPUT
 
 
+def get_parameter_set(filename) -> list:
+    """
+    Converts log file parameter to
+    :param filename:
+    :return:
+    """
+    parameters = []
+    with open(filename, "r") as f:
+        for line in f:
+            parameters.append(extract_enz_from_log(line))
+    return parameters
+
+
 def get_equations(system: str):
     """
     Returns equation of specific system

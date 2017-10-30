@@ -14,14 +14,6 @@ def convert_to_enzyme(para) -> dict:
     return converted_para
 
 
-def get_parameter_set(filename) -> list:
-    parameters = []
-    with open(filename, "r") as f:
-        for line in f:
-            parameters.append(extract_enz_from_log(line))
-    return parameters
-
-
 def get_pa_ratio(wt, mt):
     return ((mt[4] + mt[5]) / (mt[0] + mt[7])) / (
         (wt[4] + wt[5]) / (wt[0] + wt[7]))
