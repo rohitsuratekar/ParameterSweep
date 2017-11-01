@@ -4,6 +4,7 @@ Need mutant sweep file created with "mutant_check.py" script
 """
 
 from collections import defaultdict
+from random import shuffle
 
 from matplotlib import pylab as plt
 
@@ -60,59 +61,79 @@ def print_enzymes(all_enzymes):
                             all_enzymes[e].properties.get('k')))
 
 
-def save_plot(rdga, laza, lowest_para, is_dag, system):
+def save_plot(rdga, laza, lowest_para, is_dag, system, allowed_error):
     plt.clf()
+    fig1 = plt.figure()
+    ax1 = fig1.add_subplot(111)
     for k in rdga.keys():
+        new_rdga = []
+        new_laza = []
+        for i in range(len(allowed_error[k])):
+            if allowed_error[k][i].count(True) == len(allowed_error[k][i]):
+                new_rdga.append(rdga[k][i])
+                new_laza.append(laza[k][i])
+
         if is_dag:
             val = 'DAG'
-            plt.xlim(-10, 50)
-            plt.ylim(0, 5)
+            ax1.set_xlim(-10, 50)
+            ax1.set_ylim(0, 5)
             c = '#3F51B5'
             save_name = system + "_" + k + '_dag.png'
             wt = 1
         else:
             c = '#F44336'
             val = 'PA_{total}'
-            plt.xlim(0, 4)
-            plt.ylim(0, 10)
+            ax1.set_xlim(0, 4)
+            ax1.set_ylim(0, 10)
             save_name = system + "_" + k + '_pa.png'
             wt = 2.4
 
-        plt.scatter(rdga[k], laza[k], marker='o', color=c, alpha=0.5)
-        plt.axhline(y=wt, color='grey', linestyle='--')
-        plt.axvline(x=1, color='grey', linestyle='--')
-        plt.title(system)
-        plt.annotate('$%s/PI_{total}$' % val, xy=(0.8, 0.95),
+        ax1.axhline(y=wt, color='grey', linestyle='--')
+        ax1.axvline(x=1, color='grey', linestyle='--')
+
+        ax1.scatter(rdga[k], laza[k], marker='o', color=c, alpha=0.5)
+        ax1.scatter(new_rdga, new_laza, marker='o', color='g', alpha=0.5)
+        ax1.set_title(system)
+        ax1.annotate('$%s/PI_{total}$' % val, xy=(0.8, 0.95),
                      xycoords='axes fraction')
-        plt.xlabel('Ratio in $rdgA^{3}$')
-        plt.ylabel('Ratio in $laza^{22}$')
+        ax1.set_xlabel('Ratio in $rdgA^{3}$')
+        ax1.set_ylabel('Ratio in $laza^{22}$')
 
         if is_dag:
-            plt.scatter(lowest_para.rdga_dag[k], lowest_para.laza_dag[k],
+            ax1.scatter(lowest_para.rdga_dag[k], lowest_para.laza_dag[k],
                         marker='*',
                         color='k')
         else:
-            plt.scatter(lowest_para.rdga_pa[k], lowest_para.laza_pa[k],
+            ax1.scatter(lowest_para.rdga_pa[k], lowest_para.laza_pa[k],
                         marker='*',
                         color='k')
 
-        plt.savefig(save_name, format='png', dpi=300)
+        fig1.savefig(save_name, format='png', dpi=300)
 
 
-def visualize(filename, system):
+def get_boolean_value(val, expected, error) -> bool:
+    return expected * (1 - error) < val <= expected * (1 + error)
+
+
+def visualize(filename, system, allowed_error=0.15):
     para = get_parameter_set(filename)
     rdga_dag = defaultdict(list)
     rdga_pa = defaultdict(list)
     laza_dag = defaultdict(list)
     laza_pa = defaultdict(list)
+    in_allowed_error = defaultdict(list)
     lowest_para = None
-
     for p in para:
         for k in p.expressions:
             rdga_dag[k].append(p.rdga_dag[k])
             rdga_pa[k].append(p.rdga_pa[k])
             laza_dag[k].append(p.laza_dag[k])
             laza_pa[k].append(p.laza_pa[k])
+            in_allowed_error[k].append(
+                [get_boolean_value(p.rdga_dag[k], 1, allowed_error),
+                 get_boolean_value(p.rdga_pa[k], 1, allowed_error),
+                 get_boolean_value(p.laza_dag[k], 1, allowed_error),
+                 get_boolean_value(p.laza_pa[k], 2.5, allowed_error)])
             if lowest_para is None:
                 lowest_para = p
             else:
@@ -122,20 +143,27 @@ def visualize(filename, system):
     print_enzymes(lowest_para.enzymes)
     print(lowest_para.original)
 
-    save_plot(rdga_dag, laza_dag, lowest_para, True, system)
-    save_plot(rdga_pa, laza_pa, lowest_para, False, system)
+    save_plot(rdga_dag, laza_dag, lowest_para, True, system, in_allowed_error)
+    save_plot(rdga_pa, laza_pa, lowest_para, False, system, in_allowed_error)
     para_print = 0
     para.sort(key=lambda x: x.error["0.1"])
+    first_para = para[:500]
+    shuffle(first_para)
     with open("top_para.txt", "w") as f:
-        for p in para:
+        for p in first_para:
             print(p.original.strip(), file=f, end='\n')
             para_print += 1
-            # if para_print > 1000:
-            #     break
+            if para_print > 10:
+                break
 
 
 def plot_histograms(values, mutant, lipid):
     plt.clf()
+    if lipid == "PA" and mutant == "$laza^{22}$":
+        plt.axvline(x=2.5, color='k', linestyle='--')
+    else:
+        plt.axvline(x=1, color='k', linestyle='--')
+
     for k in values.keys():
         plt.hist(values[k], alpha=0.5, label=k + " x WT")
 
@@ -143,11 +171,6 @@ def plot_histograms(values, mutant, lipid):
 
     if lipid == "PA":
         ratio = '$[PA]_{total}/PI_{total}$'
-
-    if lipid == "PA" and mutant == "$laza^{22}$":
-        plt.axvline(x=2.5, color='k', linestyle='--')
-    else:
-        plt.axvline(x=1, color='k', linestyle='--')
 
     plt.xlabel('%s ratio in %s/WT' % (ratio, mutant))
     plt.ylabel('Frequency (on log scale)')

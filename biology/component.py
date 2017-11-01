@@ -81,6 +81,12 @@ class Enzyme:
         self.v = self.original_v
         self.k = self.original_k
 
+    def mutate(self, factor):
+        if self.kinetics == MASS_ACTION:
+            self.k *= factor
+        else:
+            self.v *= factor
+
 
 class RandomEnzyme(Enzyme):
     """

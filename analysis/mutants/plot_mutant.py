@@ -44,14 +44,16 @@ def plot(system: str):
     initial_con = get_random_concentrations(total_lipid_concentration, system)
     wt_output = get_concentration_profile(system, initial_con, enz,
                                           ode_end_time, ode_slices)
-    enz[E_DAGK].v *= 0.1
+
+    print(wt_output[-1])
+    enz[E_DAGK].mutate(0.1)
     rdga_output = get_concentration_profile(system, initial_con, enz,
                                             ode_end_time, ode_slices)
-    enz[E_DAGK].v *= 10
-    enz[E_LAZA].v *= 0.1
+    enz[E_DAGK].mutate(10)
+    enz[E_LAZA].mutate(0.1)
     laza_output = get_concentration_profile(system, initial_con, enz,
                                             ode_end_time, ode_slices)
-    enz[E_LAZA].v *= 10
+    enz[E_LAZA].mutate(10)
 
     fig = plt.figure()
     gs = gridspec.GridSpec(8, 5)
@@ -100,4 +102,6 @@ def plot(system: str):
     ax3.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2)
     ax3.set_ylabel("Fold change")
     ax3.set_title("$laza^{22}$")
+    plt.savefig("mutant_para.png", format='png', dpi=300,
+                bbox_inches='tight')
     plt.show()

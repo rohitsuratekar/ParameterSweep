@@ -179,3 +179,29 @@ class Error:
                 "Enzymes": data
             }
             OUTPUT.info(json.dumps(save_values, sort_keys=True))
+
+
+def convert_to_enzyme(data) -> dict:
+    """
+    Makes new random enzyme based on kinetics
+
+    :param data: Dict of data properties
+    :return: enzyme list
+    """
+    pitp = Enzyme.make_with_values(E_PITP, data[E_PITP])
+    pi4k = Enzyme.make_with_values(E_PI4K, data[E_PI4K])
+    pip5k = Enzyme.make_with_values(E_PIP5K, data[E_PIP5K])
+    plc = Enzyme.make_with_values(E_PLC, data[E_PLC])
+    dagk = Enzyme.make_with_values(E_DAGK, data[E_DAGK])
+    laza = Enzyme.make_with_values(E_LAZA, data[E_LAZA])
+    patp = Enzyme.make_with_values(E_PATP, data[E_PATP])
+    cds = Enzyme.make_with_values(E_CDS, data[E_CDS])
+    pis = Enzyme.make_with_values(E_PIS, data[E_PIS])
+    sink = Enzyme.make_with_values(E_SINK, data[E_SINK])
+    source = Enzyme.make_with_values(E_SOURCE, data[E_SOURCE])
+    p4tase = Enzyme.make_with_values(E_P4TASE, data[E_P4TASE])
+    p5tase = Enzyme.make_with_values(E_P5TASE, data[E_P5TASE])
+    ip3tase = Enzyme.make_with_values(E_IP3_PTASE, data[E_IP3_PTASE])
+    return {x.name: x for x in
+            [pitp, pi4k, pip5k, plc, dagk, laza, patp, cds, pis, sink, source,
+             p4tase, p5tase, ip3tase]}

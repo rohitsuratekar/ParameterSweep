@@ -4,12 +4,14 @@ from analysis.mutants.plot_mutant import plot
 from analysis.mutants.visualize import visualize, single_para_sensitivity
 from analysis.sweeps.improve_parameter import improve
 from constants.namespace import *
+from test.convert_to_latex import convert_to_latex
 
 system = S_OPEN_2
+kinetics = MICHAELIS_MENTEN
 
 
 def calculate():
-    calculate_mutant('input.txt', system, MICHAELIS_MENTEN, [0.1])
+    calculate_mutant('input.txt', system, kinetics, [0.1])
 
 
 def vis():
@@ -29,7 +31,11 @@ def single():
 
 
 def imp():
-    improve(system, MICHAELIS_MENTEN, 'analysis/mutants/para.txt')
+    improve(system, kinetics, 'analysis/mutants/para.txt')
 
 
-imp()
+def latex():
+    convert_to_latex('top_para.txt')
+
+
+latex()
