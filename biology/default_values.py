@@ -20,7 +20,7 @@ gamma = 0.008  # DAG
 delta = 0.1677  # PA
 epsilon = 0.001  # CDPDAG
 
-outer_iterations = 50000
+outer_iterations = 500000
 inner_iterations = 20000
 para_skip_threshold = 200
 save_cutoff = 0.15

@@ -3,7 +3,7 @@ solution """
 
 from analysis.helper import *
 from utils.functions import update_progress
-from utils.log import LOG, CURRENT_JOB
+from utils.log import CURRENT_JOB, LOG
 
 
 def calculate_steady_states(parameters):
@@ -38,19 +38,16 @@ def get_dag(para):
     return para[3] / (para[0] + para[7])
 
 
-def laza_pa_level_correction(error):
-    if error < 2:
-        return 5
-    else:
-        return 0
-
-
 def error_with_tolerance(mt, wt, expected, percentage_tol=5):
     # We will give 5% tolerance
     e1 = abs((mt / wt) - expected)
     e2 = abs((mt / wt) - (expected + (expected * percentage_tol / 100)))
     e3 = abs((mt / wt) - (expected - (expected * percentage_tol / 100)))
     return min(e1, e2, e3)
+
+
+def error(mt, wt, expected):
+    return abs((mt / wt) - expected)
 
 
 def calculate_rdga3_error(wt, rdga3):
@@ -60,9 +57,8 @@ def calculate_rdga3_error(wt, rdga3):
     wt_dag_ratio = get_dag(wt)
     rdga3_dag_ratio = get_dag(rdga3)
 
-    return error_with_tolerance(rdga3_pa_ratio, wt_pa_ratio,
-                                1) + error_with_tolerance(rdga3_dag_ratio,
-                                                          wt_dag_ratio, 1)
+    return error(rdga3_pa_ratio, wt_pa_ratio, 1) + error(rdga3_dag_ratio,
+                                                         wt_dag_ratio, 1)
 
 
 def calculate_laza22_error(wt, laza22):
@@ -72,13 +68,13 @@ def calculate_laza22_error(wt, laza22):
     wt_dag_ratio = get_dag(wt)
     laza22_dag_ratio = get_dag(laza22)
 
-    return error_with_tolerance(laza22_pa_ratio, wt_pa_ratio, 2.4,
-                                10) + error_with_tolerance(laza22_dag_ratio,
-                                                           wt_dag_ratio, 1)
+    return error(laza22_pa_ratio, wt_pa_ratio, 2.5) + error(
+        laza22_dag_ratio, wt_dag_ratio, 1)
 
 
 def calculate_total_error(wt, rdga3, laza22):
-    e = calculate_rdga3_error(wt, rdga3) + calculate_laza22_error(wt, laza22)
+    e = calculate_rdga3_error(wt, rdga3) + calculate_laza22_error(wt, laza22) \
+        + calculate_wild_type_error(wt)
     return e
 
 
@@ -119,7 +115,119 @@ def save_parameters(parameters, error):
     OUTPUT.info(json.dumps(save_values, sort_keys=True))
 
 
-def calculate(system: str, kinetics: str):
+def get_random_ss_parameters():
+    B, E, plc = np.random.uniform(0.01, 20, 3)
+    A = np.random.uniform(alpha, 20)
+    D = np.random.uniform(0.01, alpha / gamma)
+    C = np.random.uniform((alpha - (gamma * D)) / delta, 20)
+    pitp = A * plc
+    laza = B * plc
+    patp = C * plc
+    sink = D * plc
+    source = E * plc
+    pi4k = (alpha / (1 - (alpha / A))) * plc
+    pip5k = alpha * plc / beta
+    dagk = ((alpha / gamma) - D) * (1 + (B / C)) * plc
+    pis = alpha * plc / epsilon
+    cds = C * alpha * plc / ((C * delta) - alpha + (D * gamma))
+    return pitp, pi4k, pip5k, plc, dagk, sink, laza, patp, source, cds, pis
+
+
+class ParaSet(object):
+    def __init__(self):
+        pitp, pi4k, pip5k, plc, dagk, sink, laza, patp, source, cds, pis = get_random_ss_parameters()
+        self._plc = plc
+        self._pitp = pitp
+        self._laza = laza
+        self._patp = patp
+        self._sink = sink
+        self._source = source
+        self._pi4k = pi4k
+        self._pip5k = pip5k
+        self._dagk = dagk
+        self._pis = pis
+        self._cds = cds
+        self._parameters = [pitp, pi4k, pip5k, plc, dagk, sink, laza, patp,
+                            source, cds, pis]
+
+    @property
+    def plc(self):
+        return self._parameters[3]
+
+    @property
+    def pitp(self):
+        return self._parameters[0]
+
+    @property
+    def pi4k(self):
+        return self._parameters[1]
+
+    @property
+    def pip5k(self):
+        return self._parameters[2]
+
+    @property
+    def dagk(self):
+        return self._parameters[4]
+
+    @property
+    def sink(self):
+        return self._parameters[5]
+
+    @property
+    def laza(self):
+        return self._parameters[6]
+
+    @property
+    def patp(self):
+        return self._parameters[7]
+
+    @property
+    def source(self):
+        return self._parameters[8]
+
+    @property
+    def cds(self):
+        return self._parameters[9]
+
+    @property
+    def pis(self):
+        return self._parameters[10]
+
+    def randomize(self):
+        index = np.random.randint(0, 7)
+        self._parameters[index] *= np.random.uniform(0.1, 10)
+
+    def steady_state(self):
+        return calculate_steady_states(self._parameters)
+
+    def mutate_dagk(self, factor):
+        self._parameters[4] *= factor
+
+    def mutate_laza(self, factor):
+        self._parameters[6] *= factor
+
+    def restore_to_original(self):
+        self._parameters = [self._pitp, self._pi4k, self._pip5k, self._plc,
+                            self._dagk, self._sink, self._laza, self._patp,
+                            self._source, self._cds, self._pis]
+
+    def get_pa_ratio(self):
+        ss = self.steady_state()
+        return (ss[4] + ss[5]) / (ss[0] + ss[7])
+
+    def get_dag_ratio(self):
+        ss = self.steady_state()
+        return ss[3] / (ss[0] + ss[7])
+
+    def get_all(self):
+        return self._parameters
+
+    def replace_old(self):
+        self._pitp, self._pi4k, self._pip5k, self._plc, self._dagk, self._sink, self._laza, self._patp, self._source, self._cds, self._pis = self._parameters
+
+
+def calculate(system: str, kinetics: str, mutant_factor):
     if system != S_OPEN_2 and kinetics != MASS_ACTION:
         raise Exception("This analysis is only for OPEN Cycle 2 Mass action "
                         "reactions")
@@ -137,42 +245,33 @@ def calculate(system: str, kinetics: str):
     progress_counter = 0
     update_progress(progress_counter / outer_iterations,
                     "lowest_error : %s" % lowest_error)
+
     for i in range(outer_iterations):
-        B, E = np.random.uniform(0.01, 20, 2)
-        A = np.random.uniform(alpha, 20)
-        D = np.random.uniform(0.01, alpha / gamma)
-        C = np.random.uniform((alpha - (gamma * D)) / delta, 20)
-        plc = 7.7
-        pitp = A * plc
-        laza = B * plc
-        patp = C * plc
-        sink = D * plc
-        source = E * plc
-        pi4k = (alpha / (1 - (alpha / A))) * plc
-        pip5k = alpha * plc / beta
-        dagk = ((alpha / gamma) - D) * (1 + (B / C)) * plc
-        pis = alpha * plc / epsilon
-        cds = C * alpha * plc / ((C * delta) - alpha + (D * gamma))
+        current_para = ParaSet()
+        current_error = lowest_error
 
-        wt_ss = calculate_steady_states(
-            [pitp, pi4k, pip5k, plc, dagk, sink, laza, patp, source, cds, pis])
-        dagk *= 0.1
-        rdga3_ss = calculate_steady_states(
-            [pitp, pi4k, pip5k, plc, dagk, sink, laza, patp, source, cds, pis])
-        dagk *= 10
-        laza *= 0.1
-        laza_ss = calculate_steady_states(
-            [pitp, pi4k, pip5k, plc, dagk, sink, laza, patp, source, cds, pis])
+        for j in range(inner_iterations):
+            wt = current_para.steady_state()
+            current_para.mutate_dagk(mutant_factor)
+            rdga = current_para.steady_state()
+            current_para.restore_to_original()
+            current_para.mutate_laza(mutant_factor)
+            laza = current_para.steady_state()
+            current_para.restore_to_original()
 
-        current_error = calculate_total_error(wt_ss, rdga3_ss, laza_ss)
+            error = calculate_total_error(wt, rdga, laza)
 
-        if current_error < lowest_error:
-            lowest_error = current_error
-            if current_error < save_cutoff:
-                laza *= 10
-                save_parameters(
-                    [pitp, pi4k, pip5k, plc, dagk, sink, laza, patp, source,
-                     cds, pis], current_error)
+            if error < current_error:
+                current_error = error
+                current_para.replace_old()
+                if current_error < 0.3:
+                    save_parameters(current_para.get_all(), current_error)
+            else:
+                current_para.restore_to_original()
+                current_para.randomize()
+
+            if current_error < lowest_error:
+                lowest_error = current_error
 
         progress_counter += 1
         update_progress(progress_counter / outer_iterations,
