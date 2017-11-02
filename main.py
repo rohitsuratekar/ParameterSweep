@@ -7,19 +7,20 @@ from constants.namespace import *
 from test.convert_to_latex import convert_to_latex
 
 system = S_OPEN_2
-kinetics = MICHAELIS_MENTEN
+kinetics = MASS_ACTION
+expression_level = 0.1
 
 
 def calculate():
-    calculate_mutant('input.txt', system, kinetics, [0.1])
+    calculate_mutant('input.txt', system, kinetics, [expression_level])
 
 
 def vis():
-    visualize('output/output.log', system)
+    visualize('output/output.log', system, expression_level)
 
 
 def plot_mutant():
-    plot(system)
+    plot(system, expression_level)
 
 
 def exp():
@@ -31,11 +32,11 @@ def single():
 
 
 def imp():
-    improve(system, kinetics, 'analysis/mutants/para.txt')
+    improve(system, kinetics, 'analysis/mutants/para.txt', expression_level)
 
 
 def latex():
     convert_to_latex('top_para.txt')
 
 
-latex()
+imp()

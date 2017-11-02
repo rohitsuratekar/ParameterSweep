@@ -6,8 +6,6 @@ from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
 
 
-
-
 def update_enzymes(enzyme_list: dict) -> None:
     """
     Updates enzyme sweeps. Use this if you want to accept changes to enzyme
@@ -18,15 +16,16 @@ def update_enzymes(enzyme_list: dict) -> None:
         e.use_current()
 
 
-def randomize(enzyme_list: dict):
-    enzyme = enzyme_list[np.random.choice(list(enzyme_list.keys()))]
-    if enzyme.kinetics == MASS_ACTION:
-        enzyme.randomize_k()
-    else:
-        if np.random.choice([True, False]):
-            enzyme.randomize_v()
-        else:
+def randomize(enzyme_list: dict, at_a_time: int = 1):
+    for i in range(at_a_time):
+        enzyme = enzyme_list[np.random.choice(list(enzyme_list.keys()))]
+        if enzyme.kinetics == MASS_ACTION:
             enzyme.randomize_k()
+        else:
+            if np.random.choice([True, False]):
+                enzyme.randomize_v()
+            else:
+                enzyme.randomize_k()
 
 
 class MutantError:
@@ -105,7 +104,7 @@ class MutantError:
 
 
 def improve(system: str, kinetics: str, filename: str,
-            total_lipid=total_lipid_concentration):
+            mutant_expression: float, total_lipid=total_lipid_concentration):
     # Initial setup to start sweep
     log_data = {
         "UID": CURRENT_JOB,
@@ -113,6 +112,7 @@ def improve(system: str, kinetics: str, filename: str,
         "Kinetics": kinetics,
         "TotalLipid": total_lipid_concentration,
         "Analysis": "Improve Parameter",
+        "ExpressionLevel": mutant_expression,
         "version": "3.0"}
     LOG.info(json.dumps(log_data, sort_keys=True))
 
@@ -130,11 +130,13 @@ def improve(system: str, kinetics: str, filename: str,
     for i in range(outer_iterations):
         current_error = 10000000
         initial_conditions = get_random_concentrations(total_lipid, system)
-        enzymes = convert_to_enzyme(get_parameter_set(filename)[0])
+        # enzymes = convert_to_enzyme(get_parameter_set(filename)[0])
+        enzymes = get_random_enzymes(kinetics)
         para_skip = 0
-        for j in range(40000):
+        for j in range(inner_iterations):
             error = MutantError(system, initial_conditions, enzymes,
-                                time_end, cut_off=counter_error)
+                                time_end, mutant_level=mutant_expression,
+                                cut_off=0.3)
             if error.total_error < current_error:
                 error.record()
                 current_error = error.total_error
@@ -146,7 +148,7 @@ def improve(system: str, kinetics: str, filename: str,
                 else:
                     for e in enzymes.values():
                         e.reset()
-                    randomize(enzymes)
+                    randomize(enzymes, 3)
 
         if current_error < lowest_error:
             lowest_error = current_error

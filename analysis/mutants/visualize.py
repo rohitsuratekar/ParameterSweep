@@ -115,7 +115,7 @@ def get_boolean_value(val, expected, error) -> bool:
     return expected * (1 - error) < val <= expected * (1 + error)
 
 
-def visualize(filename, system, allowed_error=0.15):
+def visualize(filename, system, expression_level: float, allowed_error=0.15):
     para = get_parameter_set(filename)
     rdga_dag = defaultdict(list)
     rdga_pa = defaultdict(list)
@@ -146,7 +146,7 @@ def visualize(filename, system, allowed_error=0.15):
     save_plot(rdga_dag, laza_dag, lowest_para, True, system, in_allowed_error)
     save_plot(rdga_pa, laza_pa, lowest_para, False, system, in_allowed_error)
     para_print = 0
-    para.sort(key=lambda x: x.error["0.1"])
+    para.sort(key=lambda x: x.error[str(expression_level)])
     first_para = para[:500]
     shuffle(first_para)
     with open("top_para.txt", "w") as f:

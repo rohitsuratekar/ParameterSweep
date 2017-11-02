@@ -8,11 +8,11 @@ Only "Total Lipid Level" will be included into logs
 default_v = 1
 default_k = 10
 
-min_v, max_v = 0.01, 10
-min_k, max_k = 1, 200
+min_v, max_v = 0.01, 100
+min_k, max_k = 0.1, 600
 
-rand_around_v = 1
-rand_around_k = 10
+rand_around_v = 10
+rand_around_k = 100
 
 alpha = 0.05  # PIP2
 beta = 0.05  # PI4P

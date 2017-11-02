@@ -39,21 +39,21 @@ def print_laza(val):
     print("DAG Ratio: %.3f (error: %.3f)" % (val[1], (val[1] - 1) * 100 / 1))
 
 
-def plot(system: str):
+def plot(system: str, mutant_expression: float):
     enz = get_parameter_set()
     initial_con = get_random_concentrations(total_lipid_concentration, system)
     wt_output = get_concentration_profile(system, initial_con, enz,
                                           ode_end_time, ode_slices)
 
     print(wt_output[-1])
-    enz[E_DAGK].mutate(0.1)
+    enz[E_DAGK].mutate(mutant_expression)
     rdga_output = get_concentration_profile(system, initial_con, enz,
                                             ode_end_time, ode_slices)
-    enz[E_DAGK].mutate(10)
-    enz[E_LAZA].mutate(0.1)
+    enz[E_DAGK].mutate(1 / mutant_expression)
+    enz[E_LAZA].mutate(mutant_expression)
     laza_output = get_concentration_profile(system, initial_con, enz,
                                             ode_end_time, ode_slices)
-    enz[E_LAZA].mutate(10)
+    enz[E_LAZA].mutate(1 / mutant_expression)
 
     fig = plt.figure()
     gs = gridspec.GridSpec(8, 5)
