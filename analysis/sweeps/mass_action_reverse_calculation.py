@@ -259,10 +259,10 @@ def calculate(system: str, kinetics: str, mutant_factor):
             laza = current_para.steady_state()
             current_para.restore_to_original()
 
-            error = calculate_total_error(wt, rdga, laza)
+            e = calculate_total_error(wt, rdga, laza)
 
-            if error < current_error:
-                current_error = error
+            if e < current_error:
+                current_error = e
                 current_para.replace_old()
                 if current_error < 0.3:
                     save_parameters(current_para.get_all(), current_error)

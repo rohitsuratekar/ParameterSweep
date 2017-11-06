@@ -3,9 +3,9 @@ on analytical expression" into exact ODE equations i.e. by using K_source as
 source. Ideally this script will take old parameter, randomize ONLY source
 parameters and check for error. """
 
+from analysis.helper import *
 from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
-from analysis.helper import *
 
 
 def calculate_wild_type_error(parameters):

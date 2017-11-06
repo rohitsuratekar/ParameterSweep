@@ -54,14 +54,14 @@ def calculate_mutant(filename: str, system: str, kinetics: str,
                                                     system)
             wt_output = get_concentration_profile(system, initial_con, enz,
                                                   ode_end_time, ode_slices)
-            enz[E_DAGK].v *= expression
+            enz[E_DAGK].mutate(expression)
             rdga_output = get_concentration_profile(system, initial_con, enz,
                                                     ode_end_time, ode_slices)
-            enz[E_DAGK].v *= (1 / expression)
-            enz[E_LAZA].v *= expression
+            enz[E_DAGK].mutate(1 / expression)
+            enz[E_LAZA].mutate(expression)
             laza_output = get_concentration_profile(system, initial_con, enz,
                                                     ode_end_time, ode_slices)
-            enz[E_LAZA].v *= (1 / expression)
+            enz[E_LAZA].mutate(1 / expression)
 
             mutant_ratio[expression] = {
                 "RDGA": {
