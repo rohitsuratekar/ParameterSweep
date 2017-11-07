@@ -5,6 +5,7 @@ Plots bar graph of RDGA and LAZA mutant given parameter set in "para.txtx" file
 import matplotlib.pylab as plt
 from matplotlib import gridspec
 
+from analysis.best_parameters import get_open2
 from analysis.helper import *
 
 
@@ -25,6 +26,12 @@ def get_parameter_set() -> dict:
             for key in raw.keys():
                 para[key] = Enzyme.make_with_values(key, raw[key])
             return para
+            #return get_open2(MICHAELIS_MENTEN)
+
+
+def print_normalized_values(enzymes):
+    for k in enzymes:
+        print("%s\t%.3f\t%.3f" % (k, enzymes[k].v, enzymes[k].k))
 
 
 def print_rdga(val):
@@ -65,6 +72,8 @@ def plot(system: str, mutant_expression: float):
 
     print_rdga(rdga)
     print_laza(laza)
+    print(sum(wt_output[-1]), sum(rdga_output[-1]), sum(laza_output[-1]))
+    #print_normalized_values(enz)
 
     ind = np.arange(2)
     bar_width = 0.35

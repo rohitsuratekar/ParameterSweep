@@ -5,10 +5,10 @@ from analysis.mutants.visualize import visualize, single_para_sensitivity
 from analysis.sweeps.improve_parameter import improve
 from analysis.sweeps.mass_action_reverse_calculation import calculate
 from constants.namespace import *
-from test.convert_to_latex import convert_to_latex
+from test.convert_to_latex import convert_to_latex, convert_from_latex
 
 system = S_OPEN_2
-kinetics = MASS_ACTION
+kinetics = MICHAELIS_MENTEN
 expression_level = 0.1
 
 
@@ -40,8 +40,12 @@ def latex():
     convert_to_latex('top_para.txt')
 
 
+def to_text():
+    convert_from_latex('test/test.txt')
+
+
 def convert_mm():
     calculate(system, kinetics, 0.1)
 
 
-imp()
+latex()
