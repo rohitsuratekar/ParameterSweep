@@ -130,8 +130,8 @@ def improve(system: str, kinetics: str, filename: str,
     for i in range(outer_iterations):
         current_error = 10000000
         initial_conditions = get_random_concentrations(total_lipid, system)
-        # enzymes = convert_to_enzyme(get_parameter_set(filename)[0])
-        enzymes = get_random_enzymes(kinetics)
+        enzymes = convert_to_enzyme(get_parameter_set(filename)[0])
+        # enzymes = get_random_enzymes(kinetics)
         para_skip = 0
         for j in range(inner_iterations):
             error = MutantError(system, initial_conditions, enzymes,
@@ -148,7 +148,7 @@ def improve(system: str, kinetics: str, filename: str,
                 else:
                     for e in enzymes.values():
                         e.reset()
-                    randomize(enzymes, 3)
+                    randomize(enzymes, 4)
 
         if current_error < lowest_error:
             lowest_error = current_error

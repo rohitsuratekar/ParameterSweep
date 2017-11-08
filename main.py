@@ -8,8 +8,8 @@ from constants.namespace import *
 from test.convert_to_latex import convert_to_latex, convert_from_latex
 
 system = S_OPEN_2
-kinetics = MICHAELIS_MENTEN
-expression_level = 0.1
+kinetics = MASS_ACTION
+expression_level = 0.35
 
 
 def cal():
@@ -37,7 +37,7 @@ def imp():
 
 
 def latex():
-    convert_to_latex('top_para.txt')
+    convert_to_latex('top_para.txt', system)
 
 
 def to_text():
@@ -45,7 +45,7 @@ def to_text():
 
 
 def convert_mm():
-    calculate(system, kinetics, 0.1)
+    calculate(system, kinetics, expression_level)
 
 
-latex()
+convert_mm()

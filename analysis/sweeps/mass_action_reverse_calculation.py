@@ -116,10 +116,10 @@ def save_parameters(parameters, error):
 
 
 def get_random_ss_parameters():
-    B, E, plc = np.random.uniform(0.01, 20, 3)
-    A = np.random.uniform(alpha, 20)
+    B, E, plc = np.random.uniform(0.01, 10, 3)
+    A = np.random.uniform(alpha, 10)
     D = np.random.uniform(0.01, alpha / gamma)
-    C = np.random.uniform((alpha - (gamma * D)) / delta, 20)
+    C = np.random.uniform((alpha - (gamma * D)) / delta, 10)
     pitp = A * plc
     laza = B * plc
     patp = C * plc
@@ -194,9 +194,10 @@ class ParaSet(object):
     def pis(self):
         return self._parameters[10]
 
-    def randomize(self):
-        index = np.random.randint(0, 7)
-        self._parameters[index] *= np.random.uniform(0.1, 10)
+    def randomize(self, para: int):
+        for i in range(para):
+            index = np.random.randint(0, 7)
+            self._parameters[index] *= np.random.uniform(0.1, 10)
 
     def steady_state(self):
         return calculate_steady_states(self._parameters)
@@ -268,7 +269,7 @@ def calculate(system: str, kinetics: str, mutant_factor):
                     save_parameters(current_para.get_all(), current_error)
             else:
                 current_para.restore_to_original()
-                current_para.randomize()
+                current_para.randomize(2)
 
             if current_error < lowest_error:
                 lowest_error = current_error

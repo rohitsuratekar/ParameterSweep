@@ -9,7 +9,7 @@ default_v = 1
 default_k = 10
 
 min_v, max_v = 0.01, 100
-min_k, max_k = 0.1, 600
+min_k, max_k = 0.1, 300
 
 rand_around_v = 10
 rand_around_k = 100
