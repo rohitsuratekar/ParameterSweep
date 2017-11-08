@@ -4,11 +4,16 @@ Need mutant sweep file created with "mutant_check.py" script
 """
 
 from collections import defaultdict
-from random import shuffle
 
 from matplotlib import pylab as plt
 
 from analysis.helper import *
+
+
+def check_if_within(value: float, expected_value: float, error: float) -> bool:
+    return expected_value - expected_value * (
+        error / 100) <= value <= expected_value + expected_value * (
+        error / 100)
 
 
 class DataObject:
@@ -24,6 +29,10 @@ class DataObject:
         self.rdga_pa = {}
         self.rdga_dag = {}
         self.error = {}
+        self.rdga_pa_error = {}
+        self.rdga_dag_error = {}
+        self.laza_pa_error = {}
+        self.laza_dag_error = {}
         for k in self.expressions:
             self.laza[k] = mutants[k]['LAZA']
             self.rdga[k] = mutants[k]['RDGA']
@@ -31,9 +40,23 @@ class DataObject:
             self.laza_dag[k] = self.laza[k]['DAG']
             self.rdga_pa[k] = self.rdga[k]['PA']
             self.rdga_dag[k] = self.rdga[k]['DAG']
-            self.error[k] = abs(self.laza_dag[k] - 1) + abs(
-                self.laza_pa[k] - 2.5) / 2.5 + abs(self.rdga_dag[k] - 1) + abs(
-                self.rdga_pa[k] - 1)
+            self.rdga_pa_error[k] = abs(self.rdga_pa[k] - 1)
+            self.rdga_dag_error[k] = abs(self.rdga_dag[k] - 1)
+            self.laza_dag_error[k] = abs(self.laza_dag[k] - 1)
+            self.laza_pa_error[k] = abs(self.laza_pa[k] - 2.5) / 2.5
+            self.error[k] = self.rdga_pa_error[k] + self.rdga_dag_error[k] + \
+                            self.laza_pa_error[k] + self.laza_dag_error[k]
+
+    def is_within(self, error_percentage: float,
+                  expression_level: str) -> bool:
+        return check_if_within(self.rdga_dag_error[expression_level], 1,
+                               error_percentage) and check_if_within(
+            self.rdga_pa_error[expression_level], 1,
+            error_percentage) and check_if_within(
+            self.laza_dag_error[expression_level], 1,
+            error_percentage) and check_if_within(
+            self.laza_pa_error[expression_level], 2.5,
+            error_percentage)
 
 
 def get_parameter_set(filename) -> list:
@@ -86,7 +109,7 @@ def save_plot(rdga, laza, lowest_para, is_dag, system, allowed_error):
             ax1.set_xlim(0, 4)
             ax1.set_ylim(0, 10)
             save_name = system + "_" + k + '_pa.png'
-            wt = 2.4
+            wt = 2.5
 
         ax1.axhline(y=wt, color='grey', linestyle='--')
         ax1.axvline(x=1, color='grey', linestyle='--')
@@ -112,7 +135,7 @@ def save_plot(rdga, laza, lowest_para, is_dag, system, allowed_error):
 
 
 def get_boolean_value(val, expected, error) -> bool:
-    return expected * (1 - error) < val <= expected * (1 + error)
+    return expected * (1 - error) <= val <= expected * (1 + error)
 
 
 def visualize(filename, system, expression_level: float, allowed_error=0.15):
@@ -129,11 +152,16 @@ def visualize(filename, system, expression_level: float, allowed_error=0.15):
             rdga_pa[k].append(p.rdga_pa[k])
             laza_dag[k].append(p.laza_dag[k])
             laza_pa[k].append(p.laza_pa[k])
-            in_allowed_error[k].append(
-                [get_boolean_value(p.rdga_dag[k], 1, allowed_error),
-                 get_boolean_value(p.rdga_pa[k], 1, allowed_error),
-                 get_boolean_value(p.laza_dag[k], 1, allowed_error),
-                 get_boolean_value(p.laza_pa[k], 2.5, allowed_error)])
+            bool_list = [get_boolean_value(p.rdga_dag[k], 1, allowed_error),
+                         get_boolean_value(p.rdga_pa[k], 1, allowed_error),
+                         get_boolean_value(p.laza_dag[k], 1, allowed_error),
+                         get_boolean_value(p.laza_pa[k], 2.5, allowed_error)]
+            in_allowed_error[k].append(bool_list)
+
+            # if bool_list.count(True) == 4:
+            #     with open("below.txt", "a") as f:
+            #         print(p.original.strip(), file=f)
+
             if lowest_para is None:
                 lowest_para = p
             else:
@@ -148,7 +176,7 @@ def visualize(filename, system, expression_level: float, allowed_error=0.15):
     para_print = 0
     para.sort(key=lambda x: x.error[str(expression_level)])
     first_para = para[:500]
-    shuffle(first_para)
+    # shuffle(first_para)
     with open("top_para.txt", "w") as f:
         for p in first_para:
             print(p.original.strip(), file=f, end='\n')

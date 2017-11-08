@@ -41,6 +41,23 @@ open2_mass_action = {
     "Mutants": {"0.1": {"LAZA": {"DAG": 0.9461, "PA": 2.3611},
                         "RDGA": {"DAG": 1.0058, "PA": 0.8542}}}}
 
+open2_mm_lower_expression = {"Enzymes": {
+    "cds": {"k": 19.8006, "kinetics": "michaelis_menten", "v": 0.4718},
+    "dagk": {"k": 45.6353, "kinetics": "michaelis_menten", "v": 29.5054},
+    "ip3ptase": {"k": 585.559, "kinetics": "michaelis_menten", "v": 10.3665},
+    "laza": {"k": 4.5792, "kinetics": "michaelis_menten", "v": 2.0589},
+    "p4tase": {"k": 317.6421, "kinetics": "michaelis_menten", "v": 15.5906},
+    "p5tase": {"k": 563.6006, "kinetics": "michaelis_menten", "v": 11.7547},
+    "patp": {"k": 196.5722, "kinetics": "michaelis_menten", "v": 0.0268},
+    "pi4k": {"k": 681.9002, "kinetics": "michaelis_menten", "v": 1.4338},
+    "pip5k": {"k": 20.9412, "kinetics": "michaelis_menten", "v": 0.9555},
+    "pis": {"k": 18.8697, "kinetics": "michaelis_menten", "v": 33.59},
+    "pitp": {"k": 144.561, "kinetics": "michaelis_menten", "v": 12.9106},
+    "plc": {"k": 19.9778, "kinetics": "michaelis_menten", "v": 0.906},
+    "sink": {"k": 105.527, "kinetics": "michaelis_menten", "v": 22.6159},
+    "source": {"k": 0.2476, "kinetics": "michaelis_menten", "v": 10.7851}},
+                             "Error": 0.2117}
+
 
 def get_open2(kinetics: str) -> dict:
     enzymes = {}

@@ -25,9 +25,9 @@ def print_table(table: defaultdict):
                     (table["header"].count("c") - 2)
     print_string += "\n"
     for k in table:
-        if k is not "header":
+        if k != "header":
             table[k] = table[k][:-1]
-            if k[-1] == "v":
+            if k[-1] == "V":
                 print_string += table[k] + r"\\\cline{2-%d}" % (table[
                                                                     k].count(
                     "&") + 1) + "\n"
@@ -38,11 +38,31 @@ def print_table(table: defaultdict):
     print(print_string)
 
 
-def convert_to_latex(filename):
+def convert_to_latex(filename, system, normalize=False):
     line_dict = defaultdict(str)
     header_put = False
     set_number = 0
-    for e in get_parameter_set(filename):
+    para_set = get_parameter_set(filename)
+    if normalize:
+        for e in para_set:
+            initial_conditions = get_random_concentrations(
+                total_lipid_concentration, system)
+            output = get_concentration_profile(system, initial_conditions,
+                                               e, ode_end_time, ode_slices)
+
+            n_k = e[E_PLC].k
+            n_v = e[E_PLC].v
+            for key in e:
+                if e[key].kinetics == MASS_ACTION:
+                    e[key].k = e[key].k / n_k
+                elif e[key].kinetics == MICHAELIS_MENTEN:
+                    if key != E_SOURCE:
+                        e[key].v = e[key].v / n_v
+                        e[key].k = e[key].k / sum(output[-1])
+                    else:
+                        e[key].k = e[key].k / n_v
+
+    for e in para_set:
         set_number += 1
         try:
             e.pop(E_IP3_PTASE)
@@ -57,12 +77,12 @@ def convert_to_latex(filename):
         line_dict["header"] += "c|"
         line_dict["title"] += str(set_number) + "&"
         for enx in e:
-            if len(line_dict[enx + "v"]) == 0:
+            if len(line_dict[enx + "V"]) == 0:
                 line_dict[
-                    enx + "v"] += "\multirow{2}{*}{\\textbf{%s}} & v & " % enx
-                line_dict[enx + "k"] += " & k &"
-            line_dict[enx + "v"] += str(e[enx].v) + " &"
-            line_dict[enx + "k"] += str(e[enx].k) + " &"
+                    enx + "V"] += "\multirow{2}{*}{\\textbf{%s}} & V & " % enx
+                line_dict[enx + "K"] += " & K &"
+            line_dict[enx + "V"] += str(round(e[enx].v, 3)) + " &"
+            line_dict[enx + "K"] += str(round(e[enx].k, 3)) + " &"
 
     print_table(line_dict)
 
