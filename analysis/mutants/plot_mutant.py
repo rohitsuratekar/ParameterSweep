@@ -31,10 +31,10 @@ def print_normalized_values(enzymes, wt):
     for k in enzymes:
         if k != E_SOURCE:
             print("%s\t%.3f\t%.3f" % (
-            k, enzymes[k].v / enzymes[E_PLC].v, enzymes[k].k / wt))
+                k, enzymes[k].v / enzymes[E_PLC].v, enzymes[k].k / wt))
         else:
             print("%s\t%.3f\t%.3f" % (
-            k, enzymes[k].v, enzymes[k].k / enzymes[E_PLC].v))
+                k, enzymes[k].v, enzymes[k].k / enzymes[E_PLC].v))
 
 
 def print_rdga(val):

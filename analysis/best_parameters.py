@@ -3,7 +3,7 @@ All best parameters from parameter sweeps
 """
 
 from biology.component import Enzyme
-from constants.namespace import MICHAELIS_MENTEN, MASS_ACTION, E_PLC, E_SOURCE
+from constants.namespace import MICHAELIS_MENTEN, MASS_ACTION
 
 open2_mm = {"Enzymes": {
     "cds": {"k": 248.299, "kinetics": "michaelis_menten", "v": 4.7169},
@@ -56,7 +56,7 @@ open2_mm_lower_expression = {"Enzymes": {
     "plc": {"k": 19.9778, "kinetics": "michaelis_menten", "v": 0.906},
     "sink": {"k": 105.527, "kinetics": "michaelis_menten", "v": 22.6159},
     "source": {"k": 0.2476, "kinetics": "michaelis_menten", "v": 10.7851}},
-                             "Error": 0.2117}
+    "Error": 0.2117}
 
 
 def get_open2(kinetics: str) -> dict:
@@ -64,22 +64,10 @@ def get_open2(kinetics: str) -> dict:
     if kinetics == MICHAELIS_MENTEN:
         for k in open2_mm["Enzymes"].keys():
             enzymes[k] = Enzyme.make_with_values(k, open2_mm["Enzymes"][k])
-            # Normalize
-            enzymes[k].v = enzymes[k].v / open2_mm["Enzymes"][E_PLC][
-                "v"]
-            if k is not E_SOURCE:
-                enzymes[k].k = enzymes[k].k / 169.11  # Total WT Sum
-            else:
-                enzymes[k].k = enzymes[k].k / open2_mm["Enzymes"][E_PLC][
-                    "v"]
 
     elif kinetics == MASS_ACTION:
         for k in open2_mass_action["Enzymes"].keys():
             enzymes[k] = Enzyme.make_with_values(k,
                                                  open2_mass_action["Enzymes"][
                                                      k])
-            # Normalize
-            enzymes[k].k = enzymes[k].k / open2_mass_action["Enzymes"][E_PLC][
-                "k"]
-
     return enzymes

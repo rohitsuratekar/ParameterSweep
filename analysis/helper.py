@@ -11,6 +11,8 @@ from biology.systems.closed_irreversible import get_equations as irreversible
 from biology.systems.closed_reversible import get_equations as reversible
 from biology.systems.open_cycle_1 import get_equations as open1
 from biology.systems.open_cycle_2 import get_equations as open2
+from biology.systems.open_cycle_2_feedback import \
+    get_equations as open2_feedback
 from constants.namespace import *
 from utils.log import OUTPUT
 
@@ -42,6 +44,8 @@ def get_equations(system: str):
         return reversible
     elif system == S_ONLY_FORWARD:
         return irreversible
+    elif system == S_OPEN_2_FEEDBACK:
+        return open2_feedback
     else:
         raise Exception("No such system found :%s" % system)
 
@@ -61,6 +65,7 @@ def get_concentration_profile(system: str, initial_condition, parameters: dict,
     :param slices: number of points to integrate
     :return: Output array
     """
+
     time = np.linspace(0, ode_time, slices)
     output = odeint(get_equations(system), initial_condition, time,
                     args=(parameters, 0))

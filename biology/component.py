@@ -37,6 +37,9 @@ class Enzyme:
         self.kinetics = kwargs.get("kinetics") or MASS_ACTION
         self.original_v = self.v
         self.original_k = self.k
+        self.feedback_factor = 1
+        self.feedback_amount = 1
+        self.feedback_substrate = None
 
     @classmethod
     def make_with_values(cls, name: str, values: dict):
@@ -63,6 +66,25 @@ class Enzyme:
         else:
             return self.k  # For source
 
+    def react_with_feedback(self, substrate: float,
+                            feedback_substrate: float) -> float:
+
+        f_n = 1 + self.feedback_factor * (
+            feedback_substrate / self.feedback_amount)
+
+        f_d = 1 + (feedback_substrate / self.feedback_amount)
+
+        feedback_factor = f_n / f_d
+
+        if substrate is not None:
+            if self.kinetics == MASS_ACTION:
+                return self.k * substrate * feedback_factor
+            elif self.kinetics == MICHAELIS_MENTEN:
+                return (self.v * feedback_factor * substrate) / (
+                    self.k + substrate)
+        else:
+            return self.k * feedback_factor  # For source
+
     def randomize_v(self):
         self.v = randomize_within(self.v, rand_around_v, min_v, max_v)
 
@@ -80,6 +102,9 @@ class Enzyme:
     def reset(self):
         self.v = self.original_v
         self.k = self.original_k
+        self.feedback_amount = 1
+        self.feedback_substrate = None
+        self.feedback_factor = 1
 
     def mutate(self, factor):
         if self.kinetics == MASS_ACTION:

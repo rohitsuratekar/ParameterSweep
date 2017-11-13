@@ -12,6 +12,7 @@ S_OPEN_2 = "open2"
 S_CLOSED_REVERSIBLE = "closed_reversible"
 S_CLASSICAL_REVERSIBLE = "classical_reversible"
 S_ONLY_FORWARD = "only_forward"
+S_OPEN_2_FEEDBACK = "open2_feedback"
 
 # Enzyme names
 E_PITP = "pitp"

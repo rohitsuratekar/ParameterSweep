@@ -265,11 +265,11 @@ def calculate(system: str, kinetics: str, mutant_factor):
             if e < current_error:
                 current_error = e
                 current_para.replace_old()
-                if current_error < 0.3:
+                if current_error < 0.35:
                     save_parameters(current_para.get_all(), current_error)
             else:
                 current_para.restore_to_original()
-                current_para.randomize(2)
+                current_para.randomize(3)
 
             if current_error < lowest_error:
                 lowest_error = current_error
