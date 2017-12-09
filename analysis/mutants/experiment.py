@@ -139,7 +139,7 @@ def light_flash(system: str, factor, lipid):
 def find_lowest_para(system: str):
     lowest_area = 0
     for l in product(lipid_names, lipid_names):
-        for factor in product(range(15), range(15)):
+        for factor in product(np.linspace(1, 10, 10), np.linspace(1, 10, 10)):
             # Feedback Settings
             if l[0] == l[1]:
                 break
@@ -169,6 +169,54 @@ def find_lowest_para(system: str):
                 print(area, l, factor)
 
 
+def lipid_transfer_experiment(system):
+    mutant = E_CDS
+
+    enz = get_parameter_set()
+
+    initial_con = get_random_concentrations(total_lipid_concentration,
+                                            system)
+
+    wt_output = get_concentration_profile(system, initial_con, enz,
+                                          ode_end_time, ode_slices)
+
+    enz[mutant].mutate(0.1)
+
+    mt_output = get_concentration_profile(system, initial_con, enz,
+                                          ode_end_time, ode_slices)
+
+    current_names = lipid_names
+    current_names.extend(["total PA", "total PI"])
+
+    current_wt = list(wt_output[-1])
+    current_wt.extend([(wt_output[-1][4] + wt_output[-1][5]),
+                       (wt_output[-1][0] + wt_output[-1][7])])
+
+    current_mt = list(mt_output[-1])
+    current_mt.extend([(mt_output[-1][4] + mt_output[-1][5]),
+                       (mt_output[-1][0] + mt_output[-1][7])])
+
+    ind = np.arange(len(current_names))  # the x locations for the groups
+    width = 0.35  # the width of the bars
+
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(ind, np.asanyarray(current_wt) / np.asanyarray(current_wt),
+                    width)
+    rects2 = ax.bar(ind + width,
+                    np.asanyarray(current_mt) / np.asanyarray(current_wt),
+                    width)
+    ax.set_ylabel('Concentration normalize to WT')
+    ax.set_xticks(ind + width / 2)
+    # ax.set_yscale("log")
+    ax.axhline(y=1, linestyle="--", color="grey")
+    ax.set_xticklabels(current_names, rotation="vertical")
+    ax.legend((rects1[0], rects2[0]), ('WT', mutant), loc=0)
+    plt.savefig("mutant_analysis.png", format='png', dpi=300,
+                bbox_inches='tight')
+    plt.show()
+
+
 def do_analysis(system):
-    light_flash(system, [13, 0], [L_PI4P, L_ERPI])
-    #find_lowest_para(system)
+    light_flash(system, [13, 2], [L_PI4P, E_PLC])
+    # find_lowest_para(system)
+    # lipid_transfer_experiment(system)

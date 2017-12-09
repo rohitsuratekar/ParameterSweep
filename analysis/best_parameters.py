@@ -63,7 +63,8 @@ def get_open2(kinetics: str) -> dict:
     enzymes = {}
     if kinetics == MICHAELIS_MENTEN:
         for k in open2_mm["Enzymes"].keys():
-            enzymes[k] = Enzyme.make_with_values(k, open2_mm["Enzymes"][k])
+            dic_value = open2_mm["Enzymes"][k]
+            enzymes[k] = Enzyme.make_with_values(k, dic_value)
 
     elif kinetics == MASS_ACTION:
         for k in open2_mass_action["Enzymes"].keys():

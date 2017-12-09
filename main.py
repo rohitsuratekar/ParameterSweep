@@ -1,4 +1,4 @@
-from analysis.mutants.experiment import light_flash
+from analysis.mutants.experiment import do_analysis
 from analysis.mutants.mutant_check import calculate_mutant
 from analysis.mutants.plot_mutant import plot
 from analysis.mutants.visualize import visualize, single_para_sensitivity
@@ -7,9 +7,9 @@ from analysis.sweeps.mass_action_reverse_calculation import calculate
 from constants.namespace import *
 from test.convert_to_latex import convert_to_latex, convert_from_latex
 
-system = S_OPEN_2
-kinetics = MASS_ACTION
-expression_level = 0.35
+system = S_OPEN_2_FEEDBACK
+kinetics = MICHAELIS_MENTEN
+expression_level = 0.1
 
 
 def cal():
@@ -25,7 +25,7 @@ def plot_mutant():
 
 
 def exp():
-    light_flash(system)
+    do_analysis(system)
 
 
 def single():
@@ -48,4 +48,4 @@ def convert_mm():
     calculate(system, kinetics, expression_level)
 
 
-convert_mm()
+plot_mutant()

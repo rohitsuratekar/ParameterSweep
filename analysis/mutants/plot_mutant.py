@@ -5,6 +5,7 @@ Plots bar graph of RDGA and LAZA mutant given parameter set in "para.txtx" file
 import matplotlib.pylab as plt
 from matplotlib import gridspec
 
+from analysis.best_parameters import get_open2
 from analysis.helper import *
 
 
@@ -37,6 +38,12 @@ def print_normalized_values(enzymes, wt):
                 k, enzymes[k].v, enzymes[k].k / enzymes[E_PLC].v))
 
 
+def print_regular(enzymes):
+    for k in enzymes:
+        print("%s\t%.3f\t%.3f" % (
+            k, enzymes[k].v, enzymes[k].k))
+
+
 def print_rdga(val):
     print("RDGA")
     print("PA Ratio: %.3f (error: %.3f)" % (val[0], (val[0] - 1) * 100 / 1))
@@ -50,12 +57,32 @@ def print_laza(val):
 
 
 def plot(system: str, mutant_expression: float):
-    enz = get_parameter_set()
+    # enz = get_parameter_set()
+    enz = get_open2(MICHAELIS_MENTEN)
+
+    temp = enz[E_PLC].v
+    for k in enz:
+        if k != E_SOURCE:
+            enz[k].v = enz[k].v / temp
+            enz[k].k = enz[k].k / 169.112
+        else:
+            enz[k].k = enz[k].k / temp
+
     initial_con = get_random_concentrations(total_lipid_concentration, system)
     wt_output = get_concentration_profile(system, initial_con, enz,
                                           ode_end_time, ode_slices)
 
-    print(wt_output[-1])
+    print(sum(wt_output[-1]))
+    s = ""
+    for i in wt_output[-1]:
+        s += str(round(i, 3)) + "\t"
+
+    print("PI4P", wt_output[-1][1] / (wt_output[-1][0] + wt_output[-1][7]))
+    print("PIP2", wt_output[-1][2] / (wt_output[-1][0] + wt_output[-1][7]))
+    print("DAG", wt_output[-1][3] / (wt_output[-1][0] + wt_output[-1][7]))
+    print("PA", (wt_output[-1][4] + wt_output[-1][5]) / (
+        wt_output[-1][0] + wt_output[-1][7]))
+
     enz[E_DAGK].mutate(mutant_expression)
     rdga_output = get_concentration_profile(system, initial_con, enz,
                                             ode_end_time, ode_slices)
@@ -75,8 +102,9 @@ def plot(system: str, mutant_expression: float):
 
     print_rdga(rdga)
     print_laza(laza)
-    print(sum(wt_output[-1]), sum(rdga_output[-1]), sum(laza_output[-1]))
-    print_normalized_values(enz, sum(wt_output[-1]))
+
+    # print_normalized_values(enz, sum(wt_output[-1]))
+    # print_regular(enz)
 
     ind = np.arange(2)
     bar_width = 0.35
@@ -116,4 +144,4 @@ def plot(system: str, mutant_expression: float):
     ax3.set_title("$laza^{22}$")
     plt.savefig("mutant_para.png", format='png', dpi=300,
                 bbox_inches='tight')
-    plt.show()
+    # plt.show()

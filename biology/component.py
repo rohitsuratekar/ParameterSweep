@@ -4,7 +4,7 @@ General objects used in all other simulations.
 
 from numpy.random import uniform
 
-from constants.namespace import MASS_ACTION, MICHAELIS_MENTEN
+from constants.namespace import MASS_ACTION, MICHAELIS_MENTEN, E_SOURCE
 from utils.functions import clamp
 from .default_values import *
 
@@ -107,7 +107,7 @@ class Enzyme:
         self.feedback_factor = 1
 
     def mutate(self, factor):
-        if self.kinetics == MASS_ACTION:
+        if self.kinetics == MASS_ACTION or self.name == E_SOURCE:
             self.k *= factor
         else:
             self.v *= factor

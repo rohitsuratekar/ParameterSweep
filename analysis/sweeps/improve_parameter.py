@@ -1,6 +1,7 @@
 """It improves given parameter values by randoming around single parameter.
 This will also check mutant levels"""
 
+from analysis.best_parameters import get_open2
 from analysis.helper import *
 from utils.functions import update_progress
 from utils.log import LOG, CURRENT_JOB
@@ -130,8 +131,9 @@ def improve(system: str, kinetics: str, filename: str,
     for i in range(outer_iterations):
         current_error = 10000000
         initial_conditions = get_random_concentrations(total_lipid, system)
-        enzymes = convert_to_enzyme(get_parameter_set(filename)[0])
+        # enzymes = convert_to_enzyme(get_parameter_set(filename)[0])
         # enzymes = get_random_enzymes(kinetics)
+        enzymes = get_open2(MASS_ACTION)
         para_skip = 0
         for j in range(inner_iterations):
             error = MutantError(system, initial_conditions, enzymes,
