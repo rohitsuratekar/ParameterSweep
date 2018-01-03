@@ -13,6 +13,7 @@ S_CLOSED_REVERSIBLE = "closed_reversible"
 S_CLASSICAL_REVERSIBLE = "classical_reversible"
 S_ONLY_FORWARD = "only_forward"
 S_OPEN_2_FEEDBACK = "open2_feedback"
+TEST_SYSTEM = "test_system"
 
 # Enzyme names
 E_PITP = "pitp"
@@ -29,6 +30,7 @@ E_SOURCE = "source"
 E_P4TASE = "p4tase"
 E_P5TASE = "p5tase"
 E_IP3_PTASE = "ip3ptase"
+E_TEST = "test_enzyme"
 
 L_PIP2 = "pip2"
 L_PI4P = "pi4p"

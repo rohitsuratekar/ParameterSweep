@@ -170,9 +170,13 @@ def find_lowest_para(system: str):
 
 
 def lipid_transfer_experiment(system):
-    mutant = E_CDS
+    mutant = E_PIP5K
 
     enz = get_parameter_set()
+    enz[E_TEST] = Enzyme(E_TEST)
+    enz[E_TEST].v = enz[E_SINK].v
+    enz[E_TEST].k = enz[E_SINK].k
+    enz[E_TEST].kinetics = enz[E_SINK].kinetics
 
     initial_con = get_random_concentrations(total_lipid_concentration,
                                             system)
@@ -181,6 +185,7 @@ def lipid_transfer_experiment(system):
                                           ode_end_time, ode_slices)
 
     enz[mutant].mutate(0.1)
+    # enz[E_LAZA].mutate(10)
 
     mt_output = get_concentration_profile(system, initial_con, enz,
                                           ode_end_time, ode_slices)
@@ -201,22 +206,28 @@ def lipid_transfer_experiment(system):
 
     fig, ax = plt.subplots()
     rects1 = ax.bar(ind, np.asanyarray(current_wt) / np.asanyarray(current_wt),
-                    width)
+                    width, color="#F48FB1")
     rects2 = ax.bar(ind + width,
                     np.asanyarray(current_mt) / np.asanyarray(current_wt),
-                    width)
+                    width, color="#81C784")
+    rects2 = ax.bar(ind + width,
+                    np.asanyarray(current_mt) / np.asanyarray(current_wt),
+                    width, color="#9575CD")
     ax.set_ylabel('Concentration normalize to WT')
     ax.set_xticks(ind + width / 2)
-    # ax.set_yscale("log")
+    #ax.set_yscale("log")
     ax.axhline(y=1, linestyle="--", color="grey")
     ax.set_xticklabels(current_names, rotation="vertical")
-    ax.legend((rects1[0], rects2[0]), ('WT', mutant), loc=0)
+    ax.legend((rects1[0], rects2[0]), ('WT', 'mutant'),
+              bbox_to_anchor=(1.04, 1),
+              loc="upper left")
+    ax.set_title(system)
     plt.savefig("mutant_analysis.png", format='png', dpi=300,
                 bbox_inches='tight')
     plt.show()
 
 
 def do_analysis(system):
-    light_flash(system, [13, 2], [L_PI4P, E_PLC])
+    # light_flash(system, [13, 2], [L_PI4P, E_PLC])
     # find_lowest_para(system)
-    # lipid_transfer_experiment(system)
+    lipid_transfer_experiment(system)

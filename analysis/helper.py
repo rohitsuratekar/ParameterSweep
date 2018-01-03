@@ -13,6 +13,7 @@ from biology.systems.open_cycle_1 import get_equations as open1
 from biology.systems.open_cycle_2 import get_equations as open2
 from biology.systems.open_cycle_2_feedback import \
     get_equations as open2_feedback
+from biology.systems.test_system import get_equations as test_system
 from constants.namespace import *
 from utils.log import OUTPUT
 
@@ -46,6 +47,8 @@ def get_equations(system: str):
         return irreversible
     elif system == S_OPEN_2_FEEDBACK:
         return open2_feedback
+    elif system == TEST_SYSTEM:
+        return test_system
     else:
         raise Exception("No such system found :%s" % system)
 

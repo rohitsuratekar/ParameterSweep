@@ -7,7 +7,7 @@ from analysis.sweeps.mass_action_reverse_calculation import calculate
 from constants.namespace import *
 from test.convert_to_latex import convert_to_latex, convert_from_latex
 
-system = S_OPEN_2_FEEDBACK
+system = S_OPEN_2
 kinetics = MICHAELIS_MENTEN
 expression_level = 0.1
 

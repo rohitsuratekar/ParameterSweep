@@ -5,7 +5,6 @@ Plots bar graph of RDGA and LAZA mutant given parameter set in "para.txtx" file
 import matplotlib.pylab as plt
 from matplotlib import gridspec
 
-from analysis.best_parameters import get_open2
 from analysis.helper import *
 
 
@@ -57,14 +56,24 @@ def print_laza(val):
 
 
 def plot(system: str, mutant_expression: float):
-    # enz = get_parameter_set()
-    enz = get_open2(MICHAELIS_MENTEN)
+    enz = get_parameter_set()
+    # enz = get_open2(MICHAELIS_MENTEN)
+
+    exp_pi = 3.5868
+    exp_pa = 0.6016
+    exp_dag = 0.0288
+
+    total_lipid_before = 207.2753
+
+    pf = exp_pi / 0.7777
+    multi_factor = 1 / total_lipid_before
+    multi_factor = multi_factor * pf
 
     temp = enz[E_PLC].v
     for k in enz:
         if k != E_SOURCE:
             enz[k].v = enz[k].v / temp
-            enz[k].k = enz[k].k / 169.112
+            enz[k].k = enz[k].k * multi_factor
         else:
             enz[k].k = enz[k].k / temp
 
@@ -72,7 +81,6 @@ def plot(system: str, mutant_expression: float):
     wt_output = get_concentration_profile(system, initial_con, enz,
                                           ode_end_time, ode_slices)
 
-    print(sum(wt_output[-1]))
     s = ""
     for i in wt_output[-1]:
         s += str(round(i, 3)) + "\t"
@@ -82,6 +90,11 @@ def plot(system: str, mutant_expression: float):
     print("DAG", wt_output[-1][3] / (wt_output[-1][0] + wt_output[-1][7]))
     print("PA", (wt_output[-1][4] + wt_output[-1][5]) / (
         wt_output[-1][0] + wt_output[-1][7]))
+
+    print(["%.4f" % x for x in wt_output[-1]])
+    # print(sum(wt_output[-1]), wt_output[-1][0] + wt_output[-1][7])
+    print(pf, sum(wt_output[-1]),
+          wt_output[-1][0] + wt_output[-1][7])
 
     enz[E_DAGK].mutate(mutant_expression)
     rdga_output = get_concentration_profile(system, initial_con, enz,
@@ -100,10 +113,10 @@ def plot(system: str, mutant_expression: float):
     laza = [get_pa_ratio(wt_output[-1], laza_output[-1]),
             get_dag_ratio(wt_output[-1], laza_output[-1])]
 
-    print_rdga(rdga)
-    print_laza(laza)
+    # print_rdga(rdga)
+    # print_laza(laza)
 
-    # print_normalized_values(enz, sum(wt_output[-1]))
+    print_normalized_values(enz, sum(wt_output[-1]))
     # print_regular(enz)
 
     ind = np.arange(2)
