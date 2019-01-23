@@ -13,7 +13,8 @@ def get_ratios(out, print_screen=False):
     if print_screen:
         print("=================")
         print("WT Output Ratios wrt Total PI")
-        print("PIP2: %f, PI4P: %f, DAG: %f, PA: %f, CDPDAG: %f" % (pip2, pi4p, dag, pa, cdpdag))
+        print("PIP2: %f, PI4P: %f, DAG: %f, PA: %f, CDPDAG: %f" % (
+            pip2, pi4p, dag, pa, cdpdag))
     return pip2, pi4p, dag, pa, cdpdag
 
 
@@ -31,14 +32,23 @@ with open("test_para.txt", "r") as f:
         for key in data['Enzymes'].keys():
             enzymes[key] = Enzyme.make_with_values(key, data['Enzymes'][key])
 
-        initial_con = get_random_concentrations(100, S_OPEN_2)
+        initial_con = get_random_concentrations(1, S_OPEN_2)
+
+        enzymes[E_PITP].v = enzymes[E_PITP].v * 0.3
+        enzymes[E_PI4K].v = enzymes[E_PI4K].v * 2.2
 
         end_time = 50000
-        output = get_concentration_profile(S_OPEN_2, initial_con, enzymes, end_time, 10000)
+        output = get_concentration_profile(S_OPEN_2, initial_con, enzymes,
+                                           end_time, 10000)
 
-        enzymes[E_LAZA].k *= 0.1
+        print("PMPA :", output[-1][4])
+        print("ERPA :", output[-1][5])
+        print("Total :", output[-1][4] + output[-1][5])
 
-        output_mt = get_concentration_profile(S_OPEN_2, initial_con, enzymes, end_time, 10000)
+        enzymes[E_DAGK].v *= 0.1
+
+        output_mt = get_concentration_profile(S_OPEN_2, initial_con, enzymes,
+                                              end_time, 10000)
 
         mutant_ratios(get_ratios(output[-1], True), get_ratios(output_mt[-1]))
 

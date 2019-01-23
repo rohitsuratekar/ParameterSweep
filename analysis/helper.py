@@ -166,6 +166,13 @@ class Error:
     def total_error(self) -> float:
         return self.pip2_error + self.pi4p_error + self.dag_error + self.cdpdag_error + self.pa_error
 
+    @property
+    def total_error_with_penalty(self) -> float:
+        if self.pmpi > self.erpi:
+            return self.total_error + 1
+        else:
+            return self.total_error
+
     def print_errors(self):
         print(self.total_error, self.pip2_error, self.pi4p_error,
               self.pa_error, self.dag_error, self.cdpdag_error)
