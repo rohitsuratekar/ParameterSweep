@@ -11,6 +11,7 @@ system = S_OPEN_2
 kinetics = MICHAELIS_MENTEN
 expression_level = 0.1
 
+
 def cal():
     calculate_mutant('input.txt', system, kinetics, [expression_level])
 
